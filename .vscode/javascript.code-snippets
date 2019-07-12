@@ -1,0 +1,80 @@
+{
+  "Given Statement": {
+    "prefix": "given",
+    "body": "const given = inspect`$0`"
+  },
+  "Should Statement": {
+    "prefix": "should",
+    "body": "const should = inspect`$0`"
+  },
+  "Re-Export Object": {
+    "prefix": "rexport",
+    "body": [
+      "export { ${1:$TM_SELECTED_TEXT} } from \"./$1\""
+    ],
+    "description": "Log output to console"
+  },
+  "New Module": {
+    "prefix": "new module",
+    "description": "scaffold a new *.js module file",
+    "body": [
+      "import { curryS } from \"../functions/curryS\"",
+      "",
+      "export const signatures = [\"${1:${TM_FILENAME_BASE}} :: ${2:a => a}\"]",
+      "",
+      "export const implementation = ${3:argument => argument}",
+      "",
+      "export const $1 = curryS(signatures, implementation)",
+      "",
+    ]
+  },
+  "New Typing": {
+    "prefix": "new dts",
+    "description": "scaffold a new *.d.ts file",
+    "body": [
+      "/**",
+      " * ```",
+      " * ${1:${TM_FILENAME_BASE/(\\.d)//}}$2",
+      " * ```",
+      " * -----------------------------------------------------------------------------",
+      " * ",
+      " * $3",
+      " * ",
+      " */",
+      "export declare function $1(${4:arg}: ${5:any}): ${6:any}$0"
+    ]
+  },
+  "New Test": {
+    "prefix": "new test",
+    "description": "scaffold a new test script",
+    "body": [
+      "import { describe } from \"../util\"",
+      "import { ${1:${TM_FILENAME_BASE/(\\.test|\\.spec)//}}, implementation, signatures } from \"./$1\"",
+      "",
+      "describe(",
+      "  {",
+      "    path: \"source/${2|functions,util,combinators|}/$1\",",
+      "    public: [$1],",
+      "    private: [implementation, signatures],",
+      "  },",
+      "  async ({ assert, inspect }) => {",
+      "    $0${TM_SELECTED_TEXT:assert.fail(\"No Functionality Tests!\")}",
+      "  }",
+      ")",
+      "",
+    ]
+  },
+  "Plan Test": {
+    "prefix": "plan",
+    "description": "create a test plan",
+    "body": [
+      "{",
+      "  const given = inspect`$1`",
+      "  const should = inspect`$2`",
+      "  const actual = $3",
+      "  const expected = $4",
+      "  assert({ given, should, actual, expected })",
+      "}"
+    ]
+  }
+}

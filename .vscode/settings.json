@@ -1,0 +1,17 @@
+{
+  "spellright.language": [
+    "en"
+  ],
+  "spellright.documentTypes": [
+    "markdown",
+    "latex",
+    "plaintext",
+    "typescript",
+    "javascript"
+  ],
+  "spellright.parserByClass": {
+    "markdown": {
+      "parser": "xml"
+    }
+  }
+}
