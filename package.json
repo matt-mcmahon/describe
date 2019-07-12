@@ -1,7 +1,7 @@
 {
   "name": "@mwm/describe",
   "author": "Matt McMahon <contact@matt-mcmahon.com> (https://matt-mcmahon.com/)",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "",
   "main": "main.cjs",
   "module": "module.js",
