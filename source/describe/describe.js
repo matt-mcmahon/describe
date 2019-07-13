@@ -1,8 +1,8 @@
 import tap from "tap"
 
-import { basename, dirname, relative, resolve } from "path"
+import { basename, resolve } from "path"
 
-import { inspect } from "../"
+import { inspect } from "../inspect"
 
 export const ownPropOrDefault = (key, def, plan) => {
   return plan.hasOwnProperty(key) ? plan[key] : def
