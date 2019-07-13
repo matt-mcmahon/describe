@@ -1,4 +1,4 @@
-import { describe } from "../"
+import { describe } from "../describe"
 import { inspect, defaultOptions, configure } from "./inspect"
 
 describe(
