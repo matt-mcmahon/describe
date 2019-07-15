@@ -8,7 +8,7 @@ export const ownPropOrDefault = (key, def, plan) => {
   return plan.hasOwnProperty(key) ? plan[key] : def
 }
 
-export const withTap = tapAssert => {
+const withTap = tapAssert => {
   const assert = block => {
     const actual = block.actual
     const expected = ownPropOrDefault("expected", true, block)
@@ -44,8 +44,6 @@ const getMods = async path => {
   return { publicMod, privateMod }
 }
 
-const ok = () => "ok"
-
 export const includesAll = (all, list) => {
   return all.map(a => list.includes(a)).reduce((a, b) => a && b, true)
 }
@@ -54,11 +52,7 @@ export const includesAny = (any, list) => {
   return any.map(a => list.includes(a)).reduce((a, b) => a || b, false)
 }
 
-const sortByName = list => {
-  return list.sort((a, b) => (a.name > b.name ? 1 : a.name < b.name ? -1 : 0))
-}
-
-export const describe = async (what = defaultWhat, plan = async () => {}) => {
+export const describe = async (what = {}, plan = async () => {}) => {
   const w = { ...defaultWhat, ...what }
 
   tap.test(w.path, async ({ test }) => {
@@ -112,14 +106,10 @@ export const describe = async (what = defaultWhat, plan = async () => {}) => {
 
     test(`user plan`, async tapAssert => {
       const assert = withTap(tapAssert)
-      try {
-        await plan({
-          assert,
-          inspect,
-        })
-      } catch (error) {
-        return tap.error(error, inspect`plan for ${w.path} should not fail!`)
-      }
+      plan({
+        assert,
+        inspect,
+      })
     })
   })
 }

@@ -3,14 +3,13 @@ import {
   ownPropOrDefault,
   includesAll,
   includesAny,
-  withTap,
 } from "./describe"
 
 describe(
   {
     path: "source/describe",
     public: [describe],
-    private: [ownPropOrDefault, withTap, includesAll, includesAny],
+    private: [ownPropOrDefault, includesAll, includesAny],
   },
   async ({ assert, inspect }) => {
     assert.test("async arguments", async ({ assert }) => {
@@ -82,6 +81,10 @@ describe(
         const should = inspect`be ${expected}, list has ${b}`
         assert({ given, should, actual, expected })
       }
+    })
+
+    assert.skip("assert.skip", () => {
+      throw new Error("should skip this test")
     })
   }
 )
