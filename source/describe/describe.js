@@ -70,7 +70,13 @@ export const describe = async (what = {}, plan = async () => {}) => {
           const actual = includesAll(all, list)
           const expected = true
           const given = inspect`${relative}`
-          const should = inspect`export only ${all.map(v => v.name || v)}`
+          const should = inspect`export only ${all.map(v =>
+            v && v.name
+              ? v.name
+              : typeof v === "string"
+              ? `${v}`.trim().replace(/\s+/gi, " ")
+              : v
+          )}`
           assert({ given, should, actual, expected })
         }
 
