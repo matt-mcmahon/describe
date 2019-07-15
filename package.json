@@ -1,24 +1,9 @@
 {
-  "name": "@mwm/describe",
   "author": "Matt McMahon <contact@matt-mcmahon.com> (https://matt-mcmahon.com/)",
-  "version": "1.2.0",
-  "description": "",
-  "main": "main.cjs",
-  "module": "module.js",
-  "keywords": [],
-  "license": "ISC",
-  "scripts": {
-    "fix": "prettier --write **/*.js",
-    "prepublishOnly": "npm run test",
-    "preversion": "npm run test",
-    "build": "tsc",
-    "lint": "prettier-check **/*.js",
-    "pretest": "tsc && prettier-check **/*.js",
-    "test": "tap -r esm -R spec ./source/**/*.test.js"
-  },
   "dependencies": {
     "esm": "^3.2.25"
   },
+  "description": "",
   "devDependencies": {
     "husky": "^3.0.0",
     "prettier": "^1.18.2",
@@ -26,9 +11,6 @@
     "tap": "^14.4.1",
     "tap-nirvana": "^1.1.0",
     "typescript": "^3.5.3"
-  },
-  "peerDependencies": {
-    "tap": "^14.4.1"
   },
   "esm": {
     "mode": "all",
@@ -38,5 +20,25 @@
     "hooks": {
       "pre-commit": "tsc && prettier-check source/**/*.js && tap -r esm -R silent ./source/**/*.test.js"
     }
-  }
+  },
+  "keywords": [],
+  "license": "ISC",
+  "main": "main.cjs",
+  "module": "module.js",
+  "name": "@mwm/describe",
+  "peerDependencies": {
+    "tap": "^14.4.1"
+  },
+  "scripts": {
+    "build": "tsc",
+    "fix": "prettier --write **/*.js",
+    "lint": "prettier-check **/*.js",
+    "prepublishOnly": "npm run test",
+    "pretest": "tsc && prettier-check **/*.js",
+    "preversion": "npm run test",
+    "test": "tap -r esm -R spec ./source/**/*.test.js"
+  },
+  "type": "module",
+  "types": "source/index.d.ts",
+  "version": "1.2.0"
 }
