@@ -13,17 +13,15 @@ describe(
     private: [ownPropOrDefault, withTap, includesAll, includesAny],
   },
   async ({ assert, inspect }) => {
-    // async argument
-    {
+    assert.test("async arguments", async ({ assert }) => {
       const given = inspect`inspect`
       const should = inspect`be a ${"function"}`
       const actual = typeof inspect
       const expected = "function"
       assert({ given, should, actual, expected })
-    }
+    })
 
-    //ownPropOrDefault
-    {
+    assert.test("ownPropOrDefault", async ({ assert }) => {
       const plan = { foo: "foo" }
       {
         const given = inspect`ownPropOrDefault(${"foo"}, ${"bar"}, ${plan})`
@@ -40,10 +38,9 @@ describe(
         const expected = "bar"
         assert({ given, should, actual, expected })
       }
-    }
+    })
 
-    //includesAll/Any
-    {
+    assert.test("includesAll/Any", async ({ assert }) => {
       const [a, b, c, d, e] = ["a", "b", "c", "d", "e"]
 
       {
@@ -85,6 +82,6 @@ describe(
         const should = inspect`be ${expected}, list has ${b}`
         assert({ given, should, actual, expected })
       }
-    }
+    })
   }
 )

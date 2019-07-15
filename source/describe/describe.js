@@ -21,7 +21,11 @@ export const withTap = tapAssert => {
     return tapAssert.skip(actual, expected, `given ${given}; should ${should}`)
   }
   assert.fail = tapAssert.fail.bind(tapAssert)
-  assert.test = tapAssert.test.bind(tapAssert)
+  assert.test = async (description, plan) => {
+    return tapAssert.test(description, async innerAssert => {
+      plan({ assert: withTap(innerAssert) })
+    })
+  }
   return assert
 }
 
