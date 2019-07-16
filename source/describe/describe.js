@@ -8,6 +8,13 @@ export const ownPropOrDefault = (key, def, plan) => {
   return plan.hasOwnProperty(key) ? plan[key] : def
 }
 
+const print = v =>
+  v && v.name
+    ? v.name
+    : typeof v === "string"
+    ? `${v}`.trim().replace(/\s+/gi, " ")
+    : v
+
 const withTap = tapAssert => {
   const assert = block => {
     const actual = block.actual
@@ -41,7 +48,7 @@ const getMods = async path => {
   const privatePath = resolve(process.cwd(), path, name)
   const publicMod = await import(publicPath)
   const privateMod = await import(privatePath)
-  return { publicMod, privateMod }
+  return { name, publicMod, privateMod }
 }
 
 export const includesAll = (all, list) => {
@@ -60,29 +67,22 @@ export const describe = async (what = {}, plan = async () => {}) => {
       const assert = withTap(tapAssert)
 
       const relative = w.path
-      const { privateMod, publicMod } = await getMods(relative)
+      const { name, privateMod, publicMod } = await getMods(relative)
 
       {
         const all = [...w.public, ...w.private]
         const list = Object.values(privateMod)
 
+        const given = inspect`${relative}/${name}.js`
         {
           const actual = includesAll(all, list)
           const expected = true
-          const given = inspect`${relative}`
-          const should = inspect`export only ${all.map(v =>
-            v && v.name
-              ? v.name
-              : typeof v === "string"
-              ? `${v}`.trim().replace(/\s+/gi, " ")
-              : v
-          )}`
+          const should = inspect`export only ${all.map(print)}`
           assert({ given, should, actual, expected })
         }
 
         {
-          const given = inspect`all and list`
-          const should = inspect`have the same length`
+          const should = inspect`not export anything else`
           const actual = all.length
           const expected = list.length
           assert({ given, should, actual, expected })
@@ -90,21 +90,18 @@ export const describe = async (what = {}, plan = async () => {}) => {
       }
 
       {
+        const given = inspect`${relative}/index.js`
         {
           const actual = includesAll(w.public, Object.values(publicMod))
           const expected = true
-          const given = inspect`${relative}`
-          const should = inspect`have all ${w.public.map(v => v.name || v)}`
+          const should = inspect`have all ${w.public.map(print)}`
           assert({ given, should, actual, expected })
         }
 
         {
           const actual = includesAny(w.private, Object.values(publicMod))
           const expected = false
-          const given = inspect`${relative}`
-          const should = inspect`not have any ${w.private.map(
-            v => v.name || v
-          )}`
+          const should = inspect`not have any ${w.private.map(print)}`
           assert({ given, should, actual, expected })
         }
       }
