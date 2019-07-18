@@ -29,6 +29,7 @@
   "peerDependencies": {
     "tap": "^14.4.1"
   },
+  "private": false,
   "scripts": {
     "build": "tsc",
     "fix": "prettier --write **/*.js",
