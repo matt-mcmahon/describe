@@ -37,11 +37,24 @@ const defaultWhat = Object.freeze({
 
 const getMods = async path => {
   const name = basename(path)
-  const publicPath = resolve(process.cwd(), path, "index")
+  const e = process.env
+  const publicPath = resolve(process.cwd())
   const privatePath = resolve(process.cwd(), path, name)
   const publicMod = await import(publicPath)
   const privateMod = await import(privatePath)
-  return { name, publicMod, privateMod }
+  return { name, publicPath, publicMod, privatePath, privateMod }
+}
+
+const valuesFor = as => Object.values(as)
+
+const unique = as => [...new Set(as)]
+
+const findMissingElements = (elements, target) => {
+  return elements.filter(element => !target.includes(element))
+}
+
+const findIncludedElements = (elements, target) => {
+  return elements.filter(element => target.includes(element))
 }
 
 export const describe = async (what = {}, plan = async () => {}) => {
@@ -52,26 +65,39 @@ export const describe = async (what = {}, plan = async () => {}) => {
       const assert = withTap(tapAssert)
 
       const relative = w.path
-      const { name, privateMod, publicMod } = await getMods(relative)
+      const mods = await getMods(relative)
+      const { name, publicPath, publicMod, privatePath, privateMod } = mods
 
+      // Private Mod should have all public and private exports.
       {
-        const given = inspect`${`${relative}/${name}.js`}`
-        {
-          const actual = new Set(Object.values(privateMod))
-          const expected = new Set([...w.public, ...w.private])
-          const should = inspect`export only ${expected}`
-          assert({ given, should, actual, expected })
-        }
+        const elements = unique([...w.public, ...w.private])
+        const target = unique(valuesFor(privateMod))
+        const actual = findMissingElements(elements, target)
+        const expected = []
+        const given = inspect`${privatePath}`
+        const should = inspect`not be missing ${actual}`
+        assert({ given, should, actual, expected })
       }
 
+      // Public Mod should have all public exports
+      const target = unique(valuesFor(publicMod))
       {
-        {
-          const actual = new Set(Object.values(publicMod))
-          const expected = new Set(w.public)
-          const given = inspect`${relative + "/index.js"}`
-          const should = inspect`include only public exports`
-          assert({ given, should, actual, expected })
-        }
+        const elements = unique(w.public)
+        const actual = findMissingElements(elements, target)
+        const expected = []
+        const given = inspect`${publicPath}`
+        const should = inspect`include all public exports`
+        assert({ given, should, actual, expected })
+      }
+
+      // Public Mod should have no private exports
+      {
+        const elements = unique(w.private)
+        const actual = findIncludedElements(elements, target)
+        const expected = []
+        const given = inspect`${publicPath}`
+        const should = inspect`include all public exports`
+        assert({ given, should, actual, expected })
       }
     })
 
