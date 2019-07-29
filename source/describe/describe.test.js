@@ -33,5 +33,15 @@ describe(
         assert({ given, should, actual, expected })
       }
     })
+
+    {
+      const given = inspect`an assert that fails, but is skipped`
+      const should = inspect`not fail the test`
+      const actual = false
+      const expected = true
+      assert.skip({ given, should, actual, expected })
+    }
   }
-)
+).catch(err => {
+  throw err
+})

@@ -18,7 +18,14 @@ const withTap = tapAssert => {
   }
   assert.doesNotThrow = tapAssert.doesNotThrow.bind(tapAssert)
   assert.skip = ({ actual, expected, given, should }) => {
-    return tapAssert.skip(actual, expected, `given ${given}; should ${should}`)
+    return tapAssert.deepEqual(
+      actual,
+      expected,
+      `given ${given}; should ${should}`,
+      {
+        skip: true,
+      }
+    )
   }
   assert.fail = tapAssert.fail.bind(tapAssert)
   assert.test = async (description, plan) => {
