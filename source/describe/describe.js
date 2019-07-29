@@ -75,7 +75,7 @@ export const describe = async (what = {}, plan = async () => {}) => {
         const actual = findMissingElements(elements, target)
         const expected = []
         const given = inspect`${privatePath}`
-        const should = inspect`not be missing ${actual}`
+        const should = inspect`include all public and private exports; missing exports:`
         assert({ given, should, actual, expected })
       }
 
@@ -96,7 +96,7 @@ export const describe = async (what = {}, plan = async () => {}) => {
         const actual = findIncludedElements(elements, target)
         const expected = []
         const given = inspect`${publicPath}`
-        const should = inspect`include all public exports`
+        const should = inspect`include no private exports`
         assert({ given, should, actual, expected })
       }
     })
