@@ -42,8 +42,8 @@ import { TaggedTemplateFunction } from "../inspect"
 export declare function describe(
   moduleDescription: {
     path: string
-    public: Function[]
-    private: Function[]
+    public: any[]
+    private: any[]
   },
   moduleTests: (utilities: Utilities) => Promise<void>
 ): void
