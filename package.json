@@ -5,11 +5,11 @@
   },
   "description": "",
   "devDependencies": {
-    "husky": "^3.0.0",
-    "prettier": "^1.18.2",
-    "prettier-check": "^2.0.0",
-    "tap": "^14.4.1",
-    "typescript": "^3.5.3"
+    "husky": "^3.1.0",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^1.19.1",
+    "tap": "^14.10.1",
+    "typescript": "^3.7.2"
   },
   "esm": {
     "mode": "all",
@@ -17,7 +17,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "tsc && prettier-check source/**/*.js && tap -r esm -R silent ./source/**/*.test.js"
+      "pre-commit": "run-s test"
     }
   },
   "keywords": [],
@@ -31,12 +31,12 @@
   "private": false,
   "scripts": {
     "build": "tsc",
-    "fix": "prettier --write **/*.js",
-    "lint": "prettier-check **/*.js",
+    "lint": "prettier --check **/*.js",
+    "lint:fix": "prettier --write **/*.js",
     "prepublishOnly": "npm run test",
-    "pretest": "tsc && prettier-check **/*.js",
     "preversion": "npm run test",
-    "test": "tap -r esm -R spec ./source/**/*.test.js"
+    "test": "run-p build lint test:unit",
+    "test:unit": "tap -r esm -R spec ./source/**/*.test.js"
   },
   "type": "module",
   "types": "source/index.d.ts",
