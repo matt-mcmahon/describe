@@ -2,7 +2,7 @@
   "name": "@mwm/describe",
   "version": "2.0.0",
   "author": "Matt McMahon <contact@matt-mcmahon.com> (https://matt-mcmahon.com/)",
-  "description": "",
+  "description": "Describe is a thin wrapper around Tap that automates common conventions for testing software.",
   "keywords": [],
   "license": "ISC",
   "type": "commonjs",
@@ -29,6 +29,10 @@
   "repository": {
     "directory": "target/node",
     "type": "git",
-    "url": "https://github.com/matt-mcmahon/describe.git"
-  }
+    "url": "git+https://github.com/matt-mcmahon/describe.git"
+  },
+  "bugs": {
+    "url": "https://github.com/matt-mcmahon/describe/issues"
+  },
+  "homepage": "https://github.com/matt-mcmahon/describe#readme"
 }
