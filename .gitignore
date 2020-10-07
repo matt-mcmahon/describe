@@ -1,3 +1,10 @@
+# Build Artificats
+target/node/build
+
+# Deno Files
+.deno/gen
+.deno/**/*.metadata.json
+
 # Logs
 logs
 *.log
@@ -56,3 +63,4 @@ typings/
 
 # dotenv environment variables file
 .env
+!example/.env
