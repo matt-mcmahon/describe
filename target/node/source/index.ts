@@ -1,1 +1,1 @@
-export * from "./gen/describe";
+export { describe } from "./gen/describe";
