@@ -1,0 +1,34 @@
+{
+  "name": "@mwm/describe",
+  "version": "1.5.0",
+  "author": "Matt McMahon <contact@matt-mcmahon.com> (https://matt-mcmahon.com/)",
+  "description": "",
+  "keywords": [],
+  "license": "ISC",
+  "type": "commonjs",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "private": false,
+  "scripts": {
+    "build": "run-s build:development",
+    "build:development": "tsc",
+    "build:production": "rm -rf ./dist && tsc -p tsconfig.production.json",
+    "clean": "rm -rf ./build ./dist ./.nyc_output",
+    "test": "run-s build:development test:build",
+    "test:build": "tap ./build/**/*.test.js"
+  },
+  "dependencies": {
+    "tap": "^14.10.8"
+  },
+  "devDependencies": {
+    "@types/node": "^14.11.4",
+    "@types/tap": "^14.10.1",
+    "npm-run-all": "^4.1.5",
+    "typescript": "^4.0.3"
+  },
+  "repository": {
+    "directory": "target/node",
+    "type": "git",
+    "url": "https://github.com/matt-mcmahon/describe.git"
+  }
+}
