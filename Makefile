@@ -138,6 +138,9 @@ test-quiet: install lint-quiet
 test-watch: install
 	@while inotifywait -e close_write ${DENO_APP_DIR} ; do make test;	done
 
+test-node:
+	@cd target/node && ${NPM_RUN_CMD} test
+
 upgrade:
 ifneq (${LOCK_FILE},)
 	@read -p "Press [Enter] to update your lock-file and dependencies or [Ctrl]+[C] to cancel:" cancel
