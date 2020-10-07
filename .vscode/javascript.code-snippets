@@ -7,74 +7,41 @@
     "prefix": "should",
     "body": "const should = inspect`$0`"
   },
-  "Re-Export Object": {
-    "prefix": "rexport",
-    "body": [
-      "export { ${1:$TM_SELECTED_TEXT} } from \"./$1\""
-    ],
-    "description": "Log output to console"
-  },
-  "New Module": {
-    "prefix": "new module",
-    "description": "scaffold a new *.js module file",
-    "body": [
-      "import { curryS } from \"../functions/curryS\"",
-      "",
-      "export const signatures = [\"${1:${TM_FILENAME_BASE}} :: ${2:a => a}\"]",
-      "",
-      "export const implementation = ${3:argument => argument}",
-      "",
-      "export const $1 = curryS(signatures, implementation)",
-      "",
-    ]
-  },
-  "New Typing": {
-    "prefix": "new dts",
-    "description": "scaffold a new *.d.ts file",
-    "body": [
-      "/**",
-      " * ```",
-      " * ${1:${TM_FILENAME_BASE/(\\.d)//}}$2",
-      " * ```",
-      " * -----------------------------------------------------------------------------",
-      " * ",
-      " * $3",
-      " * ",
-      " */",
-      "export declare function $1(${4:arg}: ${5:any}): ${6:any}$0"
-    ]
-  },
-  "New Test": {
+  "New Test File": {
     "prefix": "new test",
-    "description": "scaffold a new test script",
+    "description": "scaffold a new test file",
     "body": [
-      "import { describe } from \"../util\"",
-      "import { ${1:${TM_FILENAME_BASE/(\\.test|\\.spec)//}}, implementation, signatures } from \"./$1\"",
+      "import { ${1:${TM_FILENAME_BASE/(\\.test)//}} } from \"./${2:${TM_FILENAME/(\\.test)//}}\"",
+      "import { describe } from \"${3:$4./testing/describe.ts}\"",
       "",
-      "describe(",
-      "  {",
-      "    path: \"source/${2|functions,util,combinators|}/$1\",",
-      "    public: [$1],",
-      "    private: [implementation, signatures],",
-      "  },",
-      "  async ({ assert, inspect }) => {",
-      "    $0${TM_SELECTED_TEXT:assert.fail(\"No Functionality Tests!\")}",
-      "  }",
-      ")",
-      "",
+      "describe(`${5:$2}`, async ({ assert, inspect }) => {",
+      "  $0",
+      "})",
+      ""
     ]
   },
-  "Plan Test": {
-    "prefix": "plan",
-    "description": "create a test plan",
+  "Add Assert": {
+    "prefix": "assert block",
+    "description": "create a new test block",
     "body": [
       "{",
-      "  const given = inspect`$1`",
-      "  const should = inspect`$2`",
-      "  const actual = $3",
-      "  const expected = $4",
-      "  assert({ given, should, actual, expected })",
-      "}"
+      "${1:  const value = $2;\n}  const actual = $3;",
+      "  const expected = $4;",
+      "  const given = inspect`${$5}`;",
+      "  const should = inspect`${$6}`;",
+      "  ${7:const message = `$8`;\n  }assert({ actual, expected${9:, value}${10:, message}${11:, given}${12:, should} })",
+      "}",
+      "$0"
+    ]
+  },
+  "Describe New Test Group": {
+    "prefix": "describe test",
+    "description": "describe a new test",
+    "body": [
+      "describe(`${2:${TM_FILENAME/(\\.test)//}}`, async ({ assert, inspect }) => {",
+      "  $0",
+      "})",
+      ""
     ]
   }
 }

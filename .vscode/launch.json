@@ -5,14 +5,21 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Debug TS in Deno",
       "type": "node",
       "request": "launch",
-      "name": "Launch Program",
-      "program": "${file}",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
       "runtimeArgs": [
-        "-r",
-        "esm"
+        "test",
+        "--lock=lock-file.json",
+        "--cached-only",
+        "--inspect-brk",
+        "--unstable",
+        "${file}"
       ],
+      "envFile": "${workspaceFolder}/.env",
+      "port": 9229,
       "outputCapture": "std"
     }
   ]

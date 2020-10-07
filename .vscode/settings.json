@@ -1,5 +1,35 @@
 {
+  "[javascript]": {
+    "editor.defaultFormatter": "denoland.vscode-deno"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "denoland.vscode-deno"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "denoland.vscode-deno"
+  },
+  "cSpell.enableFiletypes": ["makefile"],
+  "cSpell.enabled": true,
   "cSpell.words": [
-    "preversion"
-  ]
+    "Deno",
+    "Deno's",
+    "deps",
+    "failfast",
+    "ifeq",
+    "ifneq",
+    "importmap",
+    "inotify",
+    "inotifywait",
+    "mcmahon",
+    "nocheck",
+    "quicktest",
+    "tput"
+  ],
+  "deno.enable": true,
+  "deno.unstable": true,
+  "deno.lint": true,
+  "debug.javascript.usePreview": false,
+  "deno.import_intellisense_origins": {
+    "https://deno.land": true
+  }
 }
