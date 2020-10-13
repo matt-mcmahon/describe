@@ -5,6 +5,11 @@ target/node/build
 .deno/gen
 .deno/**/*.metadata.json
 
+# integration-tests lock files
+integration-tests/node/pnpm-lock.yaml
+integration-tasts/node/yarn-lock.yaml
+integration-tests/node/package-lock.json
+
 # Logs
 logs
 *.log
