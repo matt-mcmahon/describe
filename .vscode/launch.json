@@ -16,6 +16,8 @@
         "--cached-only",
         "--inspect-brk",
         "--unstable",
+        "--allow-run",
+        "--allow-read",
         "${file}"
       ],
       "envFile": "${workspaceFolder}/.env",
