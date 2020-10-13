@@ -10,3 +10,9 @@ export declare const isEmpty: (as: {
     length: number;
 }) => boolean;
 export declare const splitAt: (n: number) => <AS extends unknown[]>(as: AS) => unknown[][];
+declare type HasKey<PropertyName extends string | symbol> = {
+    [P in PropertyName]: unknown;
+};
+export declare const has: <K extends string | symbol>(k: K) => (a: unknown) => a is HasKey<K>;
+export declare const hasOwnOrDefault: (prop: string) => <A>(def: A) => (obj: unknown) => unknown;
+export {};

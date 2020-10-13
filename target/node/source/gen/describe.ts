@@ -1,58 +1,49 @@
 import { assertEquals, assertNotEquals, test } from "../lib/test-framework";
 import { Inspect, inspect } from "../lib/inspect";
+import { hasOwnOrDefault } from "./utils";
 
-export type Plan<A> = {
+export type Plan = {
   actual: unknown;
-  expected: A;
+  expected?: unknown;
   given?: string;
   should?: string;
   value?: unknown;
   message?: string;
-  not?: boolean;
 };
 
-export type Assert = {
-  <A>(plan: Plan<A>): void;
-  not<A>(plan: Plan<A>): void;
-};
+export interface Assert {
+  (plan: Plan): void;
+  not(plan: Plan): void;
+}
 
-export type AssertFunction = {
+export interface AssertFunction {
   (actual: unknown, expected: unknown, msg?: string): void;
-};
+}
 
-export type TestImplementation = ({
-  assert,
-  inspect,
-}: {
-  assert: Assert;
-  inspect: Inspect;
-}) => Promise<void> | void;
-
-export const describe = (
-  prefix: string,
-  implementation: ({
-    assert,
-    inspect,
-  }: {
+export interface TestImplementation {
+  ({ assert, inspect }: {
     assert: Assert;
     inspect: Inspect;
-  }) => Promise<void> | void,
-) => {
-  const assert = Object.assign(makeAssert(assertEquals), {
+  }): Promise<void> | void;
+}
+
+export function describe(prefix: string, implementation: TestImplementation) {
+  const assert: Assert = Object.assign(makeAssert(assertEquals), {
     not: makeAssert(assertNotEquals),
   });
   return test(prefix, async () => implementation({ assert, inspect }));
-};
+}
 
-export const makeAssert = (assert: AssertFunction) => {
-  return async <A>({
-    actual,
-    expected,
-    value,
-    given = inspect`${value ?? actual}`,
-    should = inspect`be ${expected}`,
-    message = `given ${given ?? value ?? actual}; should ${should ?? expected}`,
-  }: Plan<A>) => {
+export function makeAssert(assert: AssertFunction) {
+  return async (plan: Plan | Promise<Plan>) => {
+    const p = await plan;
+    const expected = hasOwnOrDefault("expected")(true)(p);
+    const {
+      actual,
+      given = inspect`${hasOwnOrDefault("value")(actual)(p)}`,
+      should = inspect`be ${expected}`,
+      message = `given ${given}; should ${should}`,
+    } = p;
     return assert(actual, expected, message);
   };
-};
+}

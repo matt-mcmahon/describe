@@ -30,14 +30,14 @@ describe("describe, self-test", ({ assert, inspect }) => {
 
   {
     type Left = typeof assert.not;
-    type Right = <A>(plan: Plan<A>) => void;
+    type Right = (plan: Plan) => void;
     const test: Identical<Left, Right> = true;
     [test]; // ignore unused var error
   }
 
   {
     type Left = Parameters<typeof assert>[0];
-    type Right = Plan<unknown>;
+    type Right = Plan;
     const test: Identical<Left, Right> = true;
     [test]; // ignore unused var error
   }
@@ -60,86 +60,89 @@ const fakeAssert = (
     assert({ actual: message, expected: result.message });
   };
 
-describe("makeAssert: { actual, expected }", ({ assert, inspect }) => {
-  {
-    const plan = {
-      actual: "foo",
-      expected: "bar",
-    };
-    const result = {
-      actual: "foo",
-      expected: "bar",
-      message: inspect`given ${"foo"}; should be ${"bar"}`,
-    };
-    makeAssert(fakeAssert(assert, result))(plan);
-  }
+describe("makeAssert: { actual, expected }", async ({ assert, inspect }) => {
+  const plan: Plan = {
+    actual: "foo",
+    expected: "bar",
+  };
+  const result = {
+    actual: "foo",
+    expected: "bar",
+    message: inspect`given ${"foo"}; should be ${"bar"}`,
+  };
+  makeAssert(fakeAssert(assert, result))(plan);
 });
 
-describe("makeAssert: { ... message }", ({ assert }) => {
-  {
-    const plan: Plan<string> = {
-      actual: "foo",
-      expected: "bar",
-      message: "some custom message",
-    };
-    const result = {
-      actual: "foo",
-      expected: "bar",
-      message: "some custom message",
-    };
-    makeAssert(fakeAssert(assert, result))(plan);
-  }
-});
-
-describe("makeAssert: { ... value }", ({ assert, inspect }) => {
-  {
-    const plan: Plan<string> = {
-      value: "value",
-      actual: "actual",
-      expected: "expected",
-    };
-    const result = {
-      actual: "actual",
-      expected: "expected",
-      message: inspect`given ${plan.value}; should be ${plan.expected}`,
-    };
-    makeAssert(fakeAssert(assert, result))(plan);
-  }
-});
-
-describe("makeAssert: { ... given, should }", (
+describe("async makeAssert", async (
   { assert, inspect },
 ) => {
-  {
-    const plan: Plan<string> = {
-      actual: "actual",
-      expected: "expected",
-      given: "given",
-      should: "should",
-    };
-    const result = {
-      actual: "actual",
-      expected: "expected",
-      message: inspect`given given; should should`,
-    };
-    makeAssert(fakeAssert(assert, result))(plan);
-  }
+  const plan: Plan = {
+    actual: "foo",
+    expected: "bar",
+  };
+  const result = {
+    actual: "foo",
+    expected: "bar",
+    message: inspect`given ${"foo"}; should be ${"bar"}`,
+  };
+  makeAssert(fakeAssert(assert, result))(Promise.resolve(plan));
 });
 
-describe("makeAssert: { ... message, given, should }", ({ assert }) => {
-  {
-    const plan: Plan<string> = {
-      actual: "actual",
-      expected: "expected",
-      given: "given",
-      should: "should",
-      message: "message",
-    };
-    const result = {
-      actual: "actual",
-      expected: "expected",
-      message: "message",
-    };
-    makeAssert(fakeAssert(assert, result))(plan);
-  }
+describe("makeAssert: { ... message }", async ({ assert }) => {
+  const plan: Plan = {
+    actual: "foo",
+    expected: "bar",
+    message: "some custom message",
+  };
+  const result = {
+    actual: "foo",
+    expected: "bar",
+    message: "some custom message",
+  };
+  makeAssert(fakeAssert(assert, result))(plan);
+});
+
+describe("makeAssert: { ... value }", async ({ assert, inspect }) => {
+  const plan: Plan = {
+    value: "value",
+    actual: "actual",
+    expected: "expected",
+  };
+  const result = {
+    actual: "actual",
+    expected: "expected",
+    message: inspect`given ${plan.value}; should be ${plan.expected}`,
+  };
+  makeAssert(fakeAssert(assert, result))(plan);
+});
+
+describe("makeAssert: { ... given, should }", async ({ assert, inspect }) => {
+  const plan: Plan = {
+    actual: "actual",
+    expected: "expected",
+    given: "given",
+    should: "should",
+  };
+  const result = {
+    actual: "actual",
+    expected: "expected",
+    message: inspect`given given; should should`,
+  };
+  makeAssert(fakeAssert(assert, result))(plan);
+});
+
+describe("makeAssert: { ... message, given, should }", async ({ assert }) => {
+  const plan: Plan = {
+    actual: "actual",
+    expected: "expected",
+    given: "given",
+    should: "should",
+    message: "message",
+  };
+  const result = {
+    actual: "actual",
+    expected: "expected",
+    message: "message",
+  };
+  makeAssert(fakeAssert(assert, result))(plan);
 });

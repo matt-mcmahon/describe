@@ -1,5 +1,7 @@
 import { describe } from "./describe";
 import {
+  has,
+  hasOwnOrDefault,
   ifElse,
   isEmpty,
   isString,
@@ -9,6 +11,43 @@ import {
   peak,
   splitAt,
 } from "./utils";
+
+describe(`has`, async ({ assert, inspect }) => {
+  {
+    const prop = "foo";
+    const value = { foo: undefined };
+    const actual = has(prop)(value);
+    const expected = true;
+    const should = inspect`has(${prop}) should be ${expected}`;
+    assert({ actual, expected, value, should });
+  }
+  {
+    const prop = "bar";
+    const value = { foo: undefined };
+    const actual = has(prop)(value);
+    const expected = false;
+    const should = inspect`has(${prop}) should be ${expected}`;
+    assert({ actual, expected, value, should });
+  }
+});
+
+describe(`hasOwnOrDefault`, async ({ assert, inspect }) => {
+  const value = { foo: undefined };
+  {
+    const prop = "foo";
+    const expected = undefined;
+    const actual = hasOwnOrDefault(prop)(expected)(value);
+    const given = inspect`hasOwnOrDefault(${prop})(${expected})(${value})`;
+    assert({ actual, expected, value, given });
+  }
+  {
+    const prop = "bar";
+    const expected = "default bar";
+    const actual = hasOwnOrDefault(prop)(expected)(value);
+    const given = inspect`hasOwnOrDefault(${prop})(${expected})(${value})`;
+    assert({ actual, expected, value, given });
+  }
+});
 
 describe("isString", ({ assert }) => {
   assert({ actual: isString(""), expected: true });
