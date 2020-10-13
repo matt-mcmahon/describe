@@ -1,12 +1,10 @@
 #!/bin/bash
 
 printf "
-Create a minimal .env file for the project. See \`./example/.env\` or 
-\./`README.md\` for more information.
-
+Create a minimal .env file for the project. See \`./example/.env\` or \`./README.md\` for more information.
 "
 
-if [ -e ".env" ]; then
+if [ -f ".env" ]; then
      read -p "A .env file exists; overwrite? [y/N] " INPUT
      case $INPUT in
      y | Y | yes | YES) truncate -s 0 .env ;;
