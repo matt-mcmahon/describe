@@ -846,7 +846,7 @@ System.register("https://deno.land/std@0.73.0/testing/asserts", ["https://deno.l
         }
     };
 });
-System.register("file:///home/matt/@mwm/describe/source/lib/deps/asserts", ["https://deno.land/std@0.73.0/testing/asserts"], function (exports_4, context_4) {
+System.register("file:///home/matt/@mwm/describe/source/lib/remote/asserts", ["https://deno.land/std@0.73.0/testing/asserts"], function (exports_4, context_4) {
     "use strict";
     var __moduleName = context_4 && context_4.id;
     function exportStar_1(m) {
@@ -866,7 +866,7 @@ System.register("file:///home/matt/@mwm/describe/source/lib/deps/asserts", ["htt
         }
     };
 });
-System.register("file:///home/matt/@mwm/describe/source/lib/test-framework", ["file:///home/matt/@mwm/describe/source/lib/deps/asserts"], function (exports_5, context_5) {
+System.register("file:///home/matt/@mwm/describe/source/lib/test-framework", ["file:///home/matt/@mwm/describe/source/lib/remote/asserts"], function (exports_5, context_5) {
     "use strict";
     var test;
     var __moduleName = context_5 && context_5.id;
@@ -907,10 +907,48 @@ System.register("file:///home/matt/@mwm/describe/source/lib/inspect", [], functi
         }
     };
 });
-System.register("file:///home/matt/@mwm/describe/source/app/describe", ["file:///home/matt/@mwm/describe/source/lib/test-framework", "file:///home/matt/@mwm/describe/source/lib/inspect"], function (exports_7, context_7) {
+System.register("file:///home/matt/@mwm/describe/source/app/utils", [], function (exports_7, context_7) {
     "use strict";
-    var test_framework_ts_1, inspect_ts_1, describe, makeAssert;
+    var map, mapV, ifElse, peak, isString, longerThan, isEmpty, splitAt, has, hasOwnOrDefault;
     var __moduleName = context_7 && context_7.id;
+    return {
+        setters: [],
+        execute: function () {
+            exports_7("map", map = (f) => (as) => as.map(f));
+            exports_7("mapV", mapV = (f) => (...as) => as.map(f));
+            exports_7("ifElse", ifElse = (predicate) => (whenTrue) => (whenFalse) => (a) => (predicate(a) ? whenTrue(a) : whenFalse(a)));
+            exports_7("peak", peak = (a) => {
+                return a;
+            });
+            exports_7("isString", isString = (a) => typeof a === "string");
+            exports_7("longerThan", longerThan = (n) => (as) => as.length > n);
+            exports_7("isEmpty", isEmpty = (as) => as.length === 0);
+            exports_7("splitAt", splitAt = (n) => (as) => [as.slice(0, n), as.slice(n)]);
+            exports_7("has", has = (k) => (a) => Object.prototype.hasOwnProperty.call(a, k));
+            exports_7("hasOwnOrDefault", hasOwnOrDefault = (prop) => (def) => (obj) => has(prop)(obj) ? obj[prop] : def);
+        }
+    };
+});
+System.register("file:///home/matt/@mwm/describe/source/app/describe", ["file:///home/matt/@mwm/describe/source/lib/test-framework", "file:///home/matt/@mwm/describe/source/lib/inspect", "file:///home/matt/@mwm/describe/source/app/utils"], function (exports_8, context_8) {
+    "use strict";
+    var test_framework_ts_1, inspect_ts_1, utils_ts_1;
+    var __moduleName = context_8 && context_8.id;
+    async function describe(prefix, implementation) {
+        const assert = Object.assign(makeAssert(test_framework_ts_1.assertEquals), {
+            not: makeAssert(test_framework_ts_1.assertNotEquals),
+        });
+        return test_framework_ts_1.test(prefix, async () => implementation({ assert, inspect: inspect_ts_1.inspect }));
+    }
+    exports_8("describe", describe);
+    function makeAssert(assert) {
+        return async (plan) => {
+            const p = await plan;
+            const expected = utils_ts_1.hasOwnOrDefault("expected")(true)(p);
+            const { actual, given = inspect_ts_1.inspect `${utils_ts_1.hasOwnOrDefault("value")(actual)(p)}`, should = inspect_ts_1.inspect `be ${expected}`, message = `given ${given}; should ${should}`, } = p;
+            return assert(actual, expected, message);
+        };
+    }
+    exports_8("makeAssert", makeAssert);
     return {
         setters: [
             function (test_framework_ts_1_1) {
@@ -918,30 +956,22 @@ System.register("file:///home/matt/@mwm/describe/source/app/describe", ["file://
             },
             function (inspect_ts_1_1) {
                 inspect_ts_1 = inspect_ts_1_1;
+            },
+            function (utils_ts_1_1) {
+                utils_ts_1 = utils_ts_1_1;
             }
         ],
         execute: function () {
-            exports_7("describe", describe = (prefix, implementation) => {
-                const assert = Object.assign(makeAssert(test_framework_ts_1.assertEquals), {
-                    not: makeAssert(test_framework_ts_1.assertNotEquals),
-                });
-                return test_framework_ts_1.test(prefix, async () => implementation({ assert, inspect: inspect_ts_1.inspect }));
-            });
-            exports_7("makeAssert", makeAssert = (assert) => {
-                return async ({ actual, expected, value, given = inspect_ts_1.inspect `${value ?? actual}`, should = inspect_ts_1.inspect `be ${expected}`, message = `given ${given ?? value ?? actual}; should ${should ?? expected}`, }) => {
-                    return assert(actual, expected, message);
-                };
-            });
         }
     };
 });
-System.register("file:///home/matt/@mwm/describe/module", ["file:///home/matt/@mwm/describe/source/app/describe"], function (exports_8, context_8) {
+System.register("file:///home/matt/@mwm/describe/module", ["file:///home/matt/@mwm/describe/source/app/describe"], function (exports_9, context_9) {
     "use strict";
-    var __moduleName = context_8 && context_8.id;
+    var __moduleName = context_9 && context_9.id;
     return {
         setters: [
             function (describe_ts_1_1) {
-                exports_8({
+                exports_9({
                     "describe": describe_ts_1_1["describe"]
                 });
             }
