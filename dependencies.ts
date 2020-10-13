@@ -1,1 +1,1 @@
-import "./source/lib/deps/asserts.ts";
+import "./source/lib/remote/asserts.ts";

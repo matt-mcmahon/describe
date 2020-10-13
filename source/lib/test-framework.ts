@@ -1,4 +1,4 @@
-export { assertEquals, assertNotEquals } from "./deps/asserts.ts";
+export { assertEquals, assertNotEquals } from "./remote/asserts.ts";
 
 type TestImplementation = {
   (): void | Promise<void>;
