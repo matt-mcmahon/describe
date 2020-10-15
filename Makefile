@@ -12,9 +12,10 @@ export
 CACHE_OPTIONS          ?= --cached-only
 DENO_DIR               ?= .deno
 IMPORT_MAP_FILE        ?= import-map.json
+USE_UNSTABLE           ?=
 LOCK_FILE              ?= lock-file.json
-RUN_PERMISSIONS        ?= --unstable
-TEST_PERMISSIONS       ?= --unstable --coverage
+RUN_PERMISSIONS        ?=
+TEST_PERMISSIONS       ?= --allow-read=./source,. --allow-run
 
 # The default values for these settings are meant to be easily overwritten by
 # your project's .env file.
@@ -43,7 +44,8 @@ DENO_DEPENDENCIES_FILE := ${DENO_MAIN}
 endif
 
 ifneq (${IMPORT_MAP_FILE},)
-IMPORT_MAP_OPTIONS     := --unstable --importmap ${IMPORT_MAP_FILE}
+IMPORT_MAP_OPTIONS     := --importmap ${IMPORT_MAP_FILE}
+USE_UNSTABLE           := --unstable
 endif
 
 ifneq (${LOCK_FILE},)
@@ -57,8 +59,10 @@ ${LOCK_FILE}:
 	@echo "File ${LOCK_FILE} does not exist."
 	read -p "Press [Enter] to update your lock-file and dependencies, or [Ctrl]+[C] to cancel:" cancel
 	deno cache --reload \
+		${RUN_PERMISSIONS} \
 		${LOCK_OPTIONS_WRITE} \
 		${IMPORT_MAP_OPTIONS} \
+		${USE_UNSTABLE} \
 		${DENO_DEPENDENCIES_FILE}
 
 build: test-quiet
@@ -69,8 +73,17 @@ build: test-quiet
 
 cache:
 	deno cache --reload \
-		${RUN_PERMISSIONS} ${LOCK_OPTIONS} ${IMPORT_MAP_OPTIONS} ${DENO_DEPENDENCIES_FILE}
-	$(shell DENO_DIR=;deno cache ${RUN_PERMISSIONS} ${LOCK_OPTIONS} ${IMPORT_MAP_OPTIONS} ${DENO_DEPENDENCIES_FILE})
+		${RUN_PERMISSIONS} \
+		${LOCK_OPTIONS} \
+		${IMPORT_MAP_OPTIONS} \
+		${USE_UNSTABLE} \
+		${DENO_DEPENDENCIES_FILE}
+	$(shell DENO_DIR=;deno cache \
+		${RUN_PERMISSIONS} \
+		${LOCK_OPTIONS} \
+		${IMPORT_MAP_OPTIONS} \
+		${USE_UNSTABLE} \
+		${DENO_DEPENDENCIES_FILE})
 
 clean:
 	rm -rf                \
@@ -92,11 +105,11 @@ install: ${LOCK_FILE}
 
 lint:
 	deno fmt --check ${RUN_PERMISSIONS} ${DENO_SOURCE_DIR}
-	-deno lint ${RUN_PERMISSIONS} ${DENO_SOURCE_DIR}
+	-deno lint --unstable ${RUN_PERMISSIONS} ${LINT_FILES}
 
 lint-quiet:
 	deno fmt --quiet --check ${RUN_PERMISSIONS} ${DENO_SOURCE_DIR}
-	-deno lint --quiet ${RUN_PERMISSIONS} ${DENO_SOURCE_DIR}
+	-deno lint --quiet --unstable ${RUN_PERMISSIONS} ${DENO_SOURCE_DIR}
 
 node: node-build node-test
 
@@ -127,13 +140,15 @@ run:
 	deno run ${RUN_PERMISSIONS} ${DENO_MAIN}
 
 test: install lint
-	deno test \
-		${TEST_PERMISSIONS} ${IMPORT_MAP_OPTIONS} ${LOCK_OPTIONS} ${CACHE_OPTIONS} \
+	deno test --unstable --coverage  \
+		${TEST_PERMISSIONS} ${LOCK_OPTIONS} ${CACHE_OPTIONS} \
+		${IMPORT_MAP_OPTIONS} \
 		${DENO_SOURCE_DIR}
 
 test-quiet: install lint-quiet
-	deno test --failfast --quiet  \
-		${TEST_PERMISSIONS} ${IMPORT_MAP_OPTIONS} ${LOCK_OPTIONS} ${CACHE_OPTIONS}  \
+	deno test --unstable --failfast --quiet \
+		${TEST_PERMISSIONS} ${LOCK_OPTIONS} ${CACHE_OPTIONS} \
+		${IMPORT_MAP_OPTIONS} \
 		${DENO_SOURCE_DIR}
 
 test-watch: install
@@ -143,7 +158,8 @@ upgrade:
 ifneq (${LOCK_FILE},)
 	read -p "Press [Enter] to update your lock-file and dependencies or [Ctrl]+[C] to cancel:" cancel
 	deno cache --reload \
-		${RUN_PERMISSIONS} ${LOCK_OPTIONS_WRITE} ${IMPORT_MAP_OPTIONS} ${DENO_DEPENDENCIES_FILE}
+		${RUN_PERMISSIONS} ${LOCK_OPTIONS_WRITE} ${IMPORT_MAP_OPTIONS} ${USE_UNSTABLE} \
+		${DENO_DEPENDENCIES_FILE}
 endif
 
 # Yes, most everything is .PHONY, I don't care 😏
