@@ -61,7 +61,7 @@ ${LOCK_FILE}:
 		${USE_UNSTABLE} \
 		${DENO_DEPENDENCIES_FILE}
 
-build: test-quiet
+build:
 	@echo "// deno-fmt-ignore-file"            >  ${DENO_BUNDLE_FILE}
 	@echo "// deno-lint-ignore-file"           >> ${DENO_BUNDLE_FILE}
 	@echo "// @ts-nocheck"                     >> ${DENO_BUNDLE_FILE}
@@ -135,19 +135,19 @@ node-test:
 run:
 	deno run ${RUN_PERMISSIONS} ${DENO_MAIN}
 
-test: install lint
+test:
 	deno test --unstable --coverage  \
 		${TEST_PERMISSIONS} ${LOCK_OPTIONS} ${CACHE_OPTIONS} \
 		${IMPORT_MAP_OPTIONS} \
 		${DENO_SOURCE_DIR}
 
-test-quiet: install lint-quiet
+test-quiet:
 	deno test --unstable --failfast --quiet \
 		${TEST_PERMISSIONS} ${LOCK_OPTIONS} ${CACHE_OPTIONS} \
 		${IMPORT_MAP_OPTIONS} \
 		${DENO_SOURCE_DIR}
 
-test-watch: install
+test-watch:
 	while inotifywait -e close_write ${DENO_APP_DIR} ; do make test;	done
 
 upgrade:
