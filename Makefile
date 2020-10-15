@@ -67,23 +67,6 @@ build: test-quiet
 	@echo "// @ts-nocheck"                     >> ${DENO_BUNDLE_FILE}
 	deno bundle ${IMPORT_MAP_OPTIONS} ${DENO_MAIN} >> ${DENO_BUNDLE_FILE}
 
-node-build: test-quiet
-	@echo
-	@echo Building for NodeJS/NPM, etc. ...
-	@echo ↪ This code is a proof-of-concept and is not intended for production!
-	@echo
-	mkdir -p ${NODE_GEN_DIR}
-	rsync -am --include="*.ts" --delete-during \
-		${DENO_APP_DIR}/ \
-		${NODE_GEN_DIR}/
-	find ${NODE_GEN_DIR} -type f -name "*.ts" -exec \
-		sed -i -E "s/(from \"\..+)\.ts(\";?)/\1\2/g" {} +
-	cd ${NODE_DIR} \
-		&& ${NPM_INSTALL} \
-		&& ${NPM_RUN} clean \
-		&& ${NPM_RUN} build:production \
-		&& ${NPM_RUN} test
-
 cache:
 	deno cache --reload \
 		${RUN_PERMISSIONS} ${LOCK_OPTIONS} ${IMPORT_MAP_OPTIONS} ${DENO_DEPENDENCIES_FILE}
@@ -107,9 +90,6 @@ format:
 
 install: ${LOCK_FILE}
 
-node-link:
-	cd ${NODE_DIR} && ${NPM_LINK}
-
 lint:
 	deno fmt --check ${RUN_PERMISSIONS} ${DENO_SOURCE_DIR}
 	-deno lint ${RUN_PERMISSIONS} ${DENO_SOURCE_DIR}
@@ -119,6 +99,29 @@ lint-quiet:
 	-deno lint --quiet ${RUN_PERMISSIONS} ${DENO_SOURCE_DIR}
 
 node: node-build node-test
+
+node-build: test-quiet
+	@echo
+	@echo Building for NodeJS/NPM, etc. ...
+	@echo ↪ This code is a proof-of-concept and is not intended for production!
+	@echo
+	mkdir -p ${NODE_GEN_DIR}
+	rsync -am --include="*.ts" --delete-during \
+		${DENO_APP_DIR}/ \
+		${NODE_GEN_DIR}/
+	find ${NODE_GEN_DIR} -type f -name "*.ts" -exec \
+		sed -i -E "s/(from \"\..+)\.ts(\";?)/\1\2/g" {} +
+	cd ${NODE_DIR} \
+		&& ${NPM_INSTALL} \
+		&& ${NPM_RUN} clean \
+		&& ${NPM_RUN} build:production \
+		&& ${NPM_RUN} test
+
+node-link:
+	cd ${NODE_DIR} && ${NPM_LINK}
+
+node-test:
+	cd target/node && ${NPM_RUN} test
 
 run:
 	deno run ${RUN_PERMISSIONS} ${DENO_MAIN}
@@ -135,9 +138,6 @@ test-quiet: install lint-quiet
 
 test-watch: install
 	while inotifywait -e close_write ${DENO_APP_DIR} ; do make test;	done
-
-node-test:
-	cd target/node && ${NPM_RUN} test
 
 upgrade:
 ifneq (${LOCK_FILE},)
