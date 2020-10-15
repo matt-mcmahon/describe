@@ -41,6 +41,7 @@ SOURCE_FILES           := ${shell find "${DENO_SOURCE_DIR}" -type f -name "*.ts"
 LINT_FILES             := ${shell find "${DENO_SOURCE_DIR}" -type f -name "*.ts" -not -name "*.test.ts"}
 
 PLATFORMS              := $(shell find ./platform/         -maxdepth 1 -mindepth 1 -type d)
+INTEGRATIONS           := $(shell find ./integration-test/ -maxdepth 1 -mindepth 1 -type d)
 
 ifneq (${IMPORT_MAP_FILE},)
 IMPORT_MAP_OPTIONS     := --importmap ${IMPORT_MAP_FILE}
@@ -55,6 +56,9 @@ endif
 all: install lint build test-all
 
 $(PLATFORMS):
+	$(MAKE) -C $@ $(TARGET)
+
+$(INTEGRATIONS):
 	$(MAKE) -C $@ $(TARGET)
 
 ${LOCK_FILE}:
@@ -83,6 +87,7 @@ ${GEN_DIR}: ${SOURCE_FILES}
 
 build: header(build) ${DENO_BUNDLE_FILE}
 	${MAKE} TARGET=$@ do-platform-action
+	${MAKE} TARGET=$@ do-integration-action
 
 cache:
 	deno cache \
@@ -100,6 +105,7 @@ cache:
 
 clean: header(clean)
 	${MAKE} TARGET=$@ do-platform-action
+	${MAKE} TARGET=$@ do-integration-action
 
 configure:
 	./configure
@@ -107,6 +113,8 @@ configure:
 deno: test build
 
 do-platform-action: $(PLATFORMS)
+
+do-integration-action: $(INTEGRATIONS)
 
 fmt: format
 
@@ -135,6 +143,7 @@ header(test):
 
 install: header(install) ${LOCK_FILE}
 	${MAKE} TARGET=$@ do-platform-action
+	${MAKE} TARGET=$@ do-integration-action
 
 lint:
 	deno fmt --check ${RUN_PERMISSIONS} ${DENO_SOURCE_DIR}
@@ -155,6 +164,7 @@ test: header(test)
 
 test-all: header(test) test
 	${MAKE} TARGET=test do-platform-action
+	${MAKE} TARGET=test do-integration-action
 
 test-quiet: header(test)
 	deno test --unstable --failfast --quiet \
@@ -181,7 +191,7 @@ endif
 	build \
 	cache clean configure \
 	deno \
-	do-platform-action \
+	do-platform-action do-integration-action \
 	fmt format \
 	header(build) header(clean) header(test) \
 	install \
@@ -189,4 +199,4 @@ endif
 	run \
 	test test-quiet test-watch \
 	upgrade \
-	$(PLATFORMS)
+	$(PLATFORMS) $(INTEGRATIONS)
