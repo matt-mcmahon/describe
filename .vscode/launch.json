@@ -8,19 +8,21 @@
       "name": "Debug TS in Deno",
       "type": "node",
       "request": "launch",
-      "cwd": "${workspaceFolder}",
+      "cwd": "${workspaceFolder}/${relativeFileDirname}/",
       "runtimeExecutable": "deno",
       "runtimeArgs": [
         "test",
-        "--lock=lock-file.json",
+        "--lock=${workspaceFolder}/lock-file.json",
         "--cached-only",
         "--inspect-brk",
         "--unstable",
         "--allow-run",
-        "--allow-read",
+        "--allow-read=\"${workspaceFolder}\"",
         "${file}"
       ],
-      "envFile": "${workspaceFolder}/.env",
+      "env": {
+        "DENO_DIR": "${workspaceFolder}/.deno",
+      },
       "port": 9229,
       "outputCapture": "std"
     }
