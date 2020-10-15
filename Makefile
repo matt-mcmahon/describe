@@ -36,19 +36,19 @@ NPM_INSTALL            ?= ${NPM} install
 NPM_RUN                ?= ${NPM} run
 NPM_LINK               ?= ${NPM} link
 
-LINT_FILES             =  ${shell find "${DENO_SOURCE_DIR}" -type f -name "*ts" -not -name "*.test.ts"}
+LINT_FILES             := ${shell find "${DENO_SOURCE_DIR}" -type f -name "*ts" -not -name "*.test.ts"}
 
 ifeq (${DENO_DEPENDENCIES_FILE},)
-DENO_DEPENDENCIES_FILE=${DENO_MAIN}
+DENO_DEPENDENCIES_FILE := ${DENO_MAIN}
 endif
 
 ifneq (${IMPORT_MAP_FILE},)
-IMPORT_MAP_OPTIONS=--unstable --importmap ${IMPORT_MAP_FILE}
+IMPORT_MAP_OPTIONS     := --unstable --importmap ${IMPORT_MAP_FILE}
 endif
 
 ifneq (${LOCK_FILE},)
-LOCK_OPTIONS=--lock ${LOCK_FILE}
-LOCK_OPTIONS_WRITE=--lock ${LOCK_FILE} --lock-write
+LOCK_OPTIONS           := --lock ${LOCK_FILE}
+LOCK_OPTIONS_WRITE     := --lock ${LOCK_FILE} --lock-write
 endif
 
 default: lint-quiet test-quiet build-deno build-node
