@@ -51,7 +51,7 @@ LOCK_OPTIONS           := --lock ${LOCK_FILE}
 LOCK_OPTIONS_WRITE     := --lock ${LOCK_FILE} --lock-write
 endif
 
-default: lint-quiet test-quiet build-deno build-node
+all: lint-quiet test-quiet build node-build
 
 ${LOCK_FILE}:
 	@echo "File ${LOCK_FILE} does not exist."
@@ -61,15 +61,13 @@ ${LOCK_FILE}:
 		${IMPORT_MAP_OPTIONS} \
 		${DENO_DEPENDENCIES_FILE}
 
-build: build-deno build-node
-
-build-deno: test-quiet
+build: test-quiet
 	@echo "// deno-fmt-ignore-file"            >  ${DENO_BUNDLE_FILE}
 	@echo "// deno-lint-ignore-file"           >> ${DENO_BUNDLE_FILE}
 	@echo "// @ts-nocheck"                     >> ${DENO_BUNDLE_FILE}
 	deno bundle ${IMPORT_MAP_OPTIONS} ${DENO_MAIN} >> ${DENO_BUNDLE_FILE}
 
-build-node: test-quiet
+node-build: test-quiet
 	@echo
 	@echo Building for NodeJS/NPM, etc. ...
 	@echo ↪ This code is a proof-of-concept and is not intended for production!
@@ -100,7 +98,7 @@ clean:
 configure:
 	./configure
 
-deno: build-deno
+deno: test build
 
 fmt: format
 
@@ -109,7 +107,7 @@ format:
 
 install: ${LOCK_FILE}
 
-link:
+node-link:
 	cd ${NODE_DIR} && ${NPM_LINK}
 
 lint:
@@ -120,7 +118,7 @@ lint-quiet:
 	deno fmt --quiet --check ${RUN_PERMISSIONS} ${DENO_SOURCE_DIR}
 	-deno lint --quiet ${RUN_PERMISSIONS} ${DENO_SOURCE_DIR}
 
-node: build-node
+node: node-build node-test
 
 run:
 	deno run ${RUN_PERMISSIONS} ${DENO_MAIN}
@@ -138,7 +136,7 @@ test-quiet: install lint-quiet
 test-watch: install
 	while inotifywait -e close_write ${DENO_APP_DIR} ; do make test;	done
 
-test-node:
+node-test:
 	cd target/node && ${NPM_RUN} test
 
 upgrade:
@@ -149,12 +147,15 @@ ifneq (${LOCK_FILE},)
 endif
 
 # Yes, most everything is .PHONY, I don't care 😏
-.PHONY: build build-deno build-node bundle \
+.PHONY: \
+	all \
+	build \
 	cache clean configure \
-	default \
+	deno \
 	fmt format \
 	install \
 	lint lint-quiet \
+	node node-build node-link node-test \
 	run \
 	test test-quiet test-watch \
 	upgrade
