@@ -49,7 +49,7 @@ LOCK_OPTIONS           := --lock ${LOCK_FILE}
 LOCK_OPTIONS_WRITE     := --lock ${LOCK_FILE} --lock-write
 endif
 
-all: lint-quiet test-quiet build node-build
+all: clean install lint test build node-build node-test $(INTEGRATION_TESTS)
 
 ${LOCK_FILE}:
 	@echo "File ${LOCK_FILE} does not exist."
