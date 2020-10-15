@@ -42,6 +42,7 @@ NPM_PACKAGE_LOCK       ?= package-lock.json
 LINT_FILES             := ${shell find "${DENO_SOURCE_DIR}" -type f -name "*.ts" -not -name "*.test.ts"}
 
 BUILD_TARGETS          := $(shell find ./target/ -maxdepth 1 -mindepth 1 -type d)
+INTEGRATION_TESTS      := $(shell find ./integration-tests/ -maxdepth 1 -mindepth 1 -type d)
 
 ifneq (${IMPORT_MAP_FILE},)
 IMPORT_MAP_OPTIONS     := --importmap ${IMPORT_MAP_FILE}
@@ -56,6 +57,9 @@ endif
 all: clean install lint build test
 
 $(BUILD_TARGETS):
+	$(MAKE) -C $@ $(TARGET)
+
+$(INTEGRATION_TESTS):
 	$(MAKE) -C $@ $(TARGET)
 
 ${LOCK_FILE}:
@@ -88,6 +92,7 @@ build:
 		sed -i -E "s/(from \"\..+)\.ts(\";?)/\1\2/g" {} +
 
 	${MAKE} TARGET=$@ do-build-targets
+	${MAKE} TARGET=$@ do-integration-tests
 
 cache:
 	deno cache \
@@ -108,6 +113,7 @@ clean:
 	@echo Cleaning...
 	@echo
 	${MAKE} TARGET=$@ do-build-targets
+	${MAKE} TARGET=$@ do-integration-tests
 
 configure:
 	./configure
@@ -115,6 +121,8 @@ configure:
 deno: test build
 
 do-build-targets: $(BUILD_TARGETS)
+
+do-integration-tests: $(INTEGRATION_TESTS)
 
 fmt: format
 
@@ -126,6 +134,7 @@ install: ${LOCK_FILE}
 	@echo Installing...
 	@echo
 	${MAKE} TARGET=$@ do-build-targets
+	${MAKE} TARGET=$@ do-integration-tests
 
 lint:
 	deno fmt --check ${RUN_PERMISSIONS} ${DENO_SOURCE_DIR}
@@ -147,6 +156,7 @@ test:
 		${IMPORT_MAP_OPTIONS} \
 		${DENO_SOURCE_DIR}
 	${MAKE} TARGET=$@ do-build-targets
+	${MAKE} TARGET=$@ do-integration-tests
 
 test-quiet:
 	deno test --unstable --failfast --quiet \
@@ -173,11 +183,11 @@ endif
 	build \
 	cache clean configure \
 	deno \
-	do-build-targets \
+	do-build-targets do-integration-tests \
 	fmt format \
 	install \
 	lint lint-quiet \
 	run \
 	test test-quiet test-watch \
 	upgrade \
-	$(BUILD_TARGETS)
+	$(BUILD_TARGETS) $(INTEGRATION_TESTS)
