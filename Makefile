@@ -54,7 +54,7 @@ all: lint-quiet test-quiet build node-build
 ${LOCK_FILE}:
 	@echo "File ${LOCK_FILE} does not exist."
 	read -p "Press [Enter] to update your lock-file and dependencies, or [Ctrl]+[C] to cancel:" cancel
-	deno cache --reload \
+	deno cache \
 		${RUN_PERMISSIONS} \
 		${LOCK_OPTIONS_WRITE} \
 		${IMPORT_MAP_OPTIONS} \
@@ -68,7 +68,7 @@ build: test-quiet
 	deno bundle ${IMPORT_MAP_OPTIONS} ${DENO_MAIN} >> ${DENO_BUNDLE_FILE}
 
 cache:
-	deno cache --reload \
+	deno cache \
 		${RUN_PERMISSIONS} \
 		${LOCK_OPTIONS} \
 		${IMPORT_MAP_OPTIONS} \
