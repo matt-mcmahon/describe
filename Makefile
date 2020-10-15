@@ -152,7 +152,9 @@ test-watch:
 
 upgrade:
 ifneq (${LOCK_FILE},)
-	read -p "Press [Enter] to update your lock-file and dependencies or [Ctrl]+[C] to cancel:" cancel
+	read -p \
+		"[Enter] to update the lock-file and dependencies, [Ctrl]+[C] to cancel:" \
+		cancel
 	deno cache --reload \
 		${RUN_PERMISSIONS} ${LOCK_OPTIONS_WRITE} ${IMPORT_MAP_OPTIONS} ${USE_UNSTABLE} \
 		${DENO_DEPENDENCIES_FILE}
