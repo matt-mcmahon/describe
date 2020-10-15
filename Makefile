@@ -31,10 +31,10 @@ DENO_LIB_DIR           ?= ${DENO_SOURCE_DIR}/lib
 NODE_DIR               ?= ./target/node
 NODE_GEN_DIR           ?= ${NODE_DIR}/source/gen
 
-NPM_CMD                ?= npm
-NPM_INSTALL_CMD        ?= ${NPM_CMD} install
-NPM_RUN_CMD            ?= ${NPM_CMD} run
-NPM_LINK_CMD           ?= ${NPM_CMD} link
+NPM                    ?= npm
+NPM_INSTALL            ?= ${NPM} install
+NPM_RUN                ?= ${NPM} run
+NPM_LINK               ?= ${NPM} link
 
 LINT_FILES             =  ${shell find "${DENO_SOURCE_DIR}" -type f -name "*ts" -not -name "*.test.ts"}
 
@@ -81,10 +81,10 @@ build-node: test-quiet
 	@find ${NODE_GEN_DIR} -type f -name "*.ts" -exec \
 		sed -i -E "s/(from \"\..+)\.ts(\";?)/\1\2/g" {} +
 	@cd ${NODE_DIR} \
-		&& ${NPM_INSTALL_CMD} \
-		&& ${NPM_RUN_CMD} clean \
-		&& ${NPM_RUN_CMD} build:production \
-		&& ${NPM_RUN_CMD} test
+		&& ${NPM_INSTALL} \
+		&& ${NPM_RUN} clean \
+		&& ${NPM_RUN} build:production \
+		&& ${NPM_RUN} test
 
 cache:
 	@deno cache --reload \
@@ -95,7 +95,7 @@ clean:
 	@rm -rf                \
 		${DENO_BUNDLE_FILE}  \
 		${NODE_GEN_DIR}
-	@cd ${NODE_DIR} && ${NPM_RUN_CMD} clean
+	@cd ${NODE_DIR} && ${NPM_RUN} clean
 
 configure:
 	@./configure
@@ -110,7 +110,7 @@ format:
 install: ${LOCK_FILE}
 
 link:
-	@cd ${NODE_DIR} && ${NPM_LINK_CMD}
+	@cd ${NODE_DIR} && ${NPM_LINK}
 
 lint:
 	@deno fmt --check ${RUN_PERMISSIONS} ${DENO_SOURCE_DIR}
@@ -139,7 +139,7 @@ test-watch: install
 	@while inotifywait -e close_write ${DENO_APP_DIR} ; do make test;	done
 
 test-node:
-	@cd target/node && ${NPM_RUN_CMD} test
+	@cd target/node && ${NPM_RUN} test
 
 upgrade:
 ifneq (${LOCK_FILE},)

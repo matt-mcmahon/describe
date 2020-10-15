@@ -26,9 +26,9 @@ echo "IMPORT_MAP_FILE=$IMPORT_MAP_FILE" >> .env
 read -e                    \
      -i "npm"              \
      -p "NPM executable: " \
-     NPM_CMD
-NPM_CMD=${NPM_CMD:-npm}
-echo "NPM_CMD=${NPM_CMD}" >> .env
+     NPM
+NPM=${NPM:-npm}
+echo "NPM=${NPM}" >> .env
 
 DENO_DIR=${DENO_DIR:-.deno}
 read -e                                            \
