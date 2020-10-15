@@ -39,10 +39,6 @@ NPM_LINK               ?= ${NPM} link
 
 LINT_FILES             := ${shell find "${DENO_SOURCE_DIR}" -type f -name "*.ts" -not -name "*.test.ts"}
 
-ifeq (${DENO_DEPENDENCIES_FILE},)
-DENO_DEPENDENCIES_FILE := ${DENO_MAIN}
-endif
-
 ifneq (${IMPORT_MAP_FILE},)
 IMPORT_MAP_OPTIONS     := --importmap ${IMPORT_MAP_FILE}
 USE_UNSTABLE           := --unstable
