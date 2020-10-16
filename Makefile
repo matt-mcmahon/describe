@@ -51,7 +51,7 @@ LOCK_OPTIONS           := --lock ${LOCK_FILE}
 LOCK_OPTIONS_WRITE     := --lock ${LOCK_FILE} --lock-write
 endif
 
-all: install lint test build node-build node-test
+all: install lint test-all build node-build node-test
 
 ${LOCK_FILE}:
 	@echo "File ${LOCK_FILE} does not exist."
@@ -170,6 +170,8 @@ test: header(test)
 		${TEST_PERMISSIONS} ${LOCK_OPTIONS} ${CACHE_OPTIONS} \
 		${IMPORT_MAP_OPTIONS} \
 		${DENO_SOURCE_DIR}
+
+test-all: header(test) test node-test
 
 test-quiet: header(test)
 	deno test --unstable --failfast --quiet \
