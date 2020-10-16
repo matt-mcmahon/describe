@@ -33,7 +33,7 @@ NODE_DIR               ?= ./target/node
 NODE_GEN_DIR           ?= ${NODE_DIR}/source/gen
 
 NPM                    ?= npm
-NPM_INSTALL            ?= ${NPM} install
+NPM_INSTALL            ?= ${NPM} install --silent --prefer-offline
 NPM_RUN                ?= ${NPM} run
 NPM_LINK               ?= ${NPM} link
 NPM_UNLINK             ?= ${NPM} unlink
