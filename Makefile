@@ -29,7 +29,7 @@ DENO_SOURCE_DIR        ?= ./source
 DENO_APP_DIR           ?= ${DENO_SOURCE_DIR}/app
 DENO_LIB_DIR           ?= ${DENO_SOURCE_DIR}/lib
 
-NODE_DIR               ?= ./target/node
+NODE_DIR               ?= ./platform/node
 NODE_GEN_DIR           ?= ${NODE_DIR}/source/gen
 
 NPM                    ?= npm
@@ -41,6 +41,8 @@ NPM_UNLINK             ?= ${NPM} unlink
 SOURCE_FILES           := ${shell find "${DENO_SOURCE_DIR}" -type f -name "*.ts"}
 LINT_FILES             := ${shell find "${DENO_SOURCE_DIR}" -type f -name "*.ts" -not -name "*.test.ts"}
 
+PLATFORMS              := $(shell find ./platform/         -maxdepth 1 -mindepth 1 -type d)
+
 ifneq (${IMPORT_MAP_FILE},)
 IMPORT_MAP_OPTIONS     := --importmap ${IMPORT_MAP_FILE}
 USE_UNSTABLE           := --unstable
@@ -51,7 +53,10 @@ LOCK_OPTIONS           := --lock ${LOCK_FILE}
 LOCK_OPTIONS_WRITE     := --lock ${LOCK_FILE} --lock-write
 endif
 
-all: install lint test-all build node-build node-test
+all: install lint build test-all
+
+$(PLATFORMS):
+	$(MAKE) -C $@ $(TARGET)
 
 ${LOCK_FILE}:
 	@echo "File ${LOCK_FILE} does not exist."
@@ -77,7 +82,8 @@ ${NODE_GEN_DIR}: ${SOURCE_FILES}
 	find ${NODE_GEN_DIR} -type f -name "*.ts" -exec \
 		sed -i -E "s/(from \"\..+)\.ts(\";?)/\1\2/g" {} +
 
-build: header(build) ${DENO_BUNDLE_FILE} ${NODE_GEN_DIR} node-build
+build: header(build) ${DENO_BUNDLE_FILE} ${NODE_GEN_DIR}
+	${MAKE} TARGET=$@ do-platform-action
 
 cache:
 	deno cache \
@@ -94,12 +100,14 @@ cache:
 		${DENO_DEPENDENCIES_FILE})
 
 clean: header(clean)
-	cd ${NODE_DIR} && ${NPM_RUN} clean
+	${MAKE} TARGET=$@ do-platform-action
 
 configure:
 	./configure
 
 deno: test build
+
+do-platform-action: $(PLATFORMS)
 
 fmt: format
 
@@ -127,7 +135,7 @@ header(test):
 	@echo
 
 install: header(install) ${LOCK_FILE}
-	${MAKE} TARGET=$@ do-build-targets
+	${MAKE} TARGET=$@ do-platform-action
 
 lint:
 	deno fmt --check ${RUN_PERMISSIONS} ${DENO_SOURCE_DIR}
@@ -136,31 +144,6 @@ lint:
 lint-quiet:
 	deno fmt --quiet --check ${RUN_PERMISSIONS} ${DENO_SOURCE_DIR}
 	-deno lint --quiet --unstable ${RUN_PERMISSIONS} ${DENO_SOURCE_DIR}
-
-node: node-build node-test
-
-node-build: test-quiet
-	@echo
-	@echo Building for NodeJS/NPM, etc. ...
-	@echo ↪ This code is a proof-of-concept and is not intended for production!
-	@echo
-	mkdir -p ${NODE_GEN_DIR}
-	rsync -am --include="*.ts" --delete-during \
-		${DENO_APP_DIR}/ \
-		${NODE_GEN_DIR}/
-	find ${NODE_GEN_DIR} -type f -name "*.ts" -exec \
-		sed -i -E "s/(from \"\..+)\.ts(\";?)/\1\2/g" {} +
-	cd ${NODE_DIR} \
-		&& ${NPM_INSTALL} \
-		&& ${NPM_RUN} clean \
-		&& ${NPM_RUN} build:production \
-		&& ${NPM_RUN} test
-
-node-link:
-	cd ${NODE_DIR} && ${NPM_LINK}
-
-node-test:
-	cd target/node && ${NPM_RUN} test
 
 run:
 	deno run ${RUN_PERMISSIONS} ${DENO_MAIN}
@@ -171,7 +154,8 @@ test: header(test)
 		${IMPORT_MAP_OPTIONS} \
 		${DENO_SOURCE_DIR}
 
-test-all: header(test) test node-test
+test-all: header(test) test
+	${MAKE} TARGET=test do-platform-action
 
 test-quiet: header(test)
 	deno test --unstable --failfast --quiet \
@@ -198,11 +182,12 @@ endif
 	build \
 	cache clean configure \
 	deno \
+	do-platform-action \
 	fmt format \
 	header(build) header(clean) header(test) \
 	install \
 	lint lint-quiet \
-	node node-build node-link node-test \
 	run \
 	test test-quiet test-watch \
-	upgrade
+	upgrade \
+	$(PLATFORMS)
