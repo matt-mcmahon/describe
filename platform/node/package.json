@@ -1,6 +1,6 @@
 {
   "name": "@mwm/describe",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "author": "Matt McMahon <contact@matt-mcmahon.com> (https://matt-mcmahon.com/)",
   "description": "Describe is a thin wrapper around Tap that automates common conventions for testing software.",
   "keywords": [],
