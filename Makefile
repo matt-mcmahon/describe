@@ -62,11 +62,23 @@ ${LOCK_FILE}:
 		${USE_UNSTABLE} \
 		${DENO_DEPENDENCIES_FILE}
 
-build:
+build: header(build)
 	@echo "// deno-fmt-ignore-file"            >  ${DENO_BUNDLE_FILE}
 	@echo "// deno-lint-ignore-file"           >> ${DENO_BUNDLE_FILE}
 	@echo "// @ts-nocheck"                     >> ${DENO_BUNDLE_FILE}
 	deno bundle ${IMPORT_MAP_OPTIONS} ${DENO_MAIN} >> ${DENO_BUNDLE_FILE}
+
+	@echo 
+	@echo Transforming TypeScript...
+	@echo
+	mkdir -p ${NODE_GEN_DIR}
+	rsync -am --include="*.ts" --delete-during \
+		${DENO_APP_DIR}/ \
+		${NODE_GEN_DIR}/
+	find ${NODE_GEN_DIR} -type f -name "*.ts" -exec \
+		sed -i -E "s/(from \"\..+)\.ts(\";?)/\1\2/g" {} +
+
+	${MAKE} TARGET=$@ do-build-targets
 
 cache:
 	deno cache \
@@ -82,8 +94,8 @@ cache:
 		${USE_UNSTABLE} \
 		${DENO_DEPENDENCIES_FILE})
 
-clean:
-	rm -rf                \
+clean: header(clean)
+	rm -rf                 \
 		${DENO_BUNDLE_FILE}  \
 		${NODE_GEN_DIR}
 	cd ${NODE_DIR} && ${NPM_RUN} clean
@@ -98,7 +110,28 @@ fmt: format
 format:
 	deno fmt ${DENO_SOURCE_DIR} ${DENO_LIB_DIR}
 
-install: ${LOCK_FILE}
+header(build):
+	@echo 
+	@echo Building...
+	@echo
+
+header(clean):
+	@echo 
+	@echo Cleaning...
+	@echo
+
+header(install):
+	@echo 
+	@echo Installing...
+	@echo
+
+header(test):
+	@echo 
+	@echo Running Tests...
+	@echo
+
+install: header(install) ${LOCK_FILE}
+	${MAKE} TARGET=$@ do-build-targets
 
 lint:
 	deno fmt --check ${RUN_PERMISSIONS} ${DENO_SOURCE_DIR}
@@ -136,19 +169,19 @@ node-test:
 run:
 	deno run ${RUN_PERMISSIONS} ${DENO_MAIN}
 
-test:
+test: header(test)
 	deno test --unstable --coverage  \
 		${TEST_PERMISSIONS} ${LOCK_OPTIONS} ${CACHE_OPTIONS} \
 		${IMPORT_MAP_OPTIONS} \
 		${DENO_SOURCE_DIR}
 
-test-quiet:
+test-quiet: header(test)
 	deno test --unstable --failfast --quiet \
 		${TEST_PERMISSIONS} ${LOCK_OPTIONS} ${CACHE_OPTIONS} \
 		${IMPORT_MAP_OPTIONS} \
 		${DENO_SOURCE_DIR}
 
-test-watch:
+test-watch: header(test)
 	while inotifywait -e close_write ${DENO_APP_DIR} ; do make test;	done
 
 upgrade:
@@ -168,6 +201,7 @@ endif
 	cache clean configure \
 	deno \
 	fmt format \
+	header(build) header(clean) header(test) \
 	install \
 	lint lint-quiet \
 	node node-build node-link node-test \
