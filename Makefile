@@ -54,7 +54,7 @@ LOCK_OPTIONS           := --lock ${LOCK_FILE}
 LOCK_OPTIONS_WRITE     := --lock ${LOCK_FILE} --lock-write
 endif
 
-all: clean install lint build test
+all: clean install lint build test-all
 
 $(BUILD_TARGETS):
 	$(MAKE) -C $@ $(TARGET)
@@ -161,8 +161,10 @@ test: header-test
 		${TEST_PERMISSIONS} ${LOCK_OPTIONS} ${CACHE_OPTIONS} \
 		${IMPORT_MAP_OPTIONS} \
 		${DENO_SOURCE_DIR}
-	${MAKE} TARGET=$@ do-build-targets
-	${MAKE} TARGET=$@ do-integration-tests
+
+test-all: header-test test
+	${MAKE} TARGET=test do-build-targets
+	${MAKE} TARGET=test do-integration-tests
 
 test-quiet: header-test
 	deno test --unstable --failfast --quiet \
@@ -195,6 +197,6 @@ endif
 	install \
 	lint lint-quiet \
 	run \
-	test test-quiet test-watch transform \
+	test test-all test-quiet test-watch transform \
 	upgrade \
 	$(BUILD_TARGETS) $(INTEGRATION_TESTS)
