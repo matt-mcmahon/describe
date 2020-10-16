@@ -1,8 +1,5 @@
 all: clean install build test
 
-$(NPM_PACKAGE_LOCK): package.json
-	${NPM_INSTALL}
-
 build: build-production
 
 build-development:
@@ -15,9 +12,10 @@ build-production:
 
 clean:
 	rm -rf ./node_modules ./build ./.nyc_output
-	$(NPM_UNLINK)
+	-$(NPM_UNLINK)
 
-install: $(NPM_PACKAGE_LOCK)
+install:
+	${NPM_INSTALL}
 	${NPM_LINK}
 
 test: build-development 
