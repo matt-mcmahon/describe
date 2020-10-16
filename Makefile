@@ -36,6 +36,7 @@ NPM                    ?= npm
 NPM_INSTALL            ?= ${NPM} install
 NPM_RUN                ?= ${NPM} run
 NPM_LINK               ?= ${NPM} link
+NPM_UNLINK             ?= ${NPM} unlink
 
 LINT_FILES             := ${shell find "${DENO_SOURCE_DIR}" -type f -name "*.ts" -not -name "*.test.ts"}
 
