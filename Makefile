@@ -63,10 +63,25 @@ ${LOCK_FILE}:
 		${DENO_DEPENDENCIES_FILE}
 
 build:
+	@echo 
+	@echo Building...
+	@echo
 	@echo "// deno-fmt-ignore-file"            >  ${DENO_BUNDLE_FILE}
 	@echo "// deno-lint-ignore-file"           >> ${DENO_BUNDLE_FILE}
 	@echo "// @ts-nocheck"                     >> ${DENO_BUNDLE_FILE}
 	deno bundle ${IMPORT_MAP_OPTIONS} ${DENO_MAIN} >> ${DENO_BUNDLE_FILE}
+
+	@echo 
+	@echo Transforming TypeScript...
+	@echo
+	mkdir -p ${NODE_GEN_DIR}
+	rsync -am --include="*.ts" --delete-during \
+		${DENO_APP_DIR}/ \
+		${NODE_GEN_DIR}/
+	find ${NODE_GEN_DIR} -type f -name "*.ts" -exec \
+		sed -i -E "s/(from \"\..+)\.ts(\";?)/\1\2/g" {} +
+
+	${MAKE} TARGET=$@ do-build-targets
 
 cache:
 	deno cache \
@@ -83,7 +98,11 @@ cache:
 		${DENO_DEPENDENCIES_FILE})
 
 clean:
-	rm -rf                \
+	@echo 
+	@echo Cleaning...
+	@echo
+	rm -rf ${DENO_BUNDLE_FILE}
+	rm -rf                 \
 		${DENO_BUNDLE_FILE}  \
 		${NODE_GEN_DIR}
 	cd ${NODE_DIR} && ${NPM_RUN} clean
@@ -99,6 +118,10 @@ format:
 	deno fmt ${DENO_SOURCE_DIR} ${DENO_LIB_DIR}
 
 install: ${LOCK_FILE}
+	@echo 
+	@echo Installing...
+	@echo
+	${MAKE} TARGET=$@ do-build-targets
 
 lint:
 	deno fmt --check ${RUN_PERMISSIONS} ${DENO_SOURCE_DIR}
@@ -137,6 +160,9 @@ run:
 	deno run ${RUN_PERMISSIONS} ${DENO_MAIN}
 
 test:
+	@echo 
+	@echo Running Tests...
+	@echo
 	deno test --unstable --coverage  \
 		${TEST_PERMISSIONS} ${LOCK_OPTIONS} ${CACHE_OPTIONS} \
 		${IMPORT_MAP_OPTIONS} \
