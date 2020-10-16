@@ -101,7 +101,6 @@ clean:
 	@echo 
 	@echo Cleaning...
 	@echo
-	rm -rf ${DENO_BUNDLE_FILE}
 	rm -rf                 \
 		${DENO_BUNDLE_FILE}  \
 		${NODE_GEN_DIR}
