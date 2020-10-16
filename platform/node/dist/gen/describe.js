@@ -4,7 +4,7 @@ exports.makeAssert = exports.describe = void 0;
 const test_framework_1 = require("../lib/test-framework");
 const inspect_1 = require("../lib/inspect");
 const utils_1 = require("./utils");
-function describe(prefix, implementation) {
+async function describe(prefix, implementation) {
     const assert = Object.assign(makeAssert(test_framework_1.assertEquals), {
         not: makeAssert(test_framework_1.assertNotEquals),
     });

@@ -27,7 +27,10 @@ export interface TestImplementation {
   }): Promise<void> | void;
 }
 
-export function describe(prefix: string, implementation: TestImplementation) {
+export async function describe(
+  prefix: string,
+  implementation: TestImplementation,
+): Promise<void> {
   const assert: Assert = Object.assign(makeAssert(assertEquals), {
     not: makeAssert(assertNotEquals),
   });
