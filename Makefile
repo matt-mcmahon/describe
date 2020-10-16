@@ -29,7 +29,7 @@ DENO_SOURCE_DIR        ?= ./source
 DENO_APP_DIR           ?= ${DENO_SOURCE_DIR}/app
 DENO_LIB_DIR           ?= ${DENO_SOURCE_DIR}/lib
 
-NODE_DIR               ?= ./target/node
+NODE_DIR               ?= ./platform/node
 NODE_GEN_DIR           ?= ${NODE_DIR}/source/gen
 
 NPM                    ?= npm
@@ -41,8 +41,8 @@ NPM_PACKAGE_LOCK       ?= package-lock.json
 
 LINT_FILES             := ${shell find "${DENO_SOURCE_DIR}" -type f -name "*.ts" -not -name "*.test.ts"}
 
-BUILD_TARGETS          := $(shell find ./target/ -maxdepth 1 -mindepth 1 -type d)
-INTEGRATION_TESTS      := $(shell find ./integration-tests/ -maxdepth 1 -mindepth 1 -type d)
+PLATFORMS              := $(shell find ./platform/         -maxdepth 1 -mindepth 1 -type d)
+INTEGRATIONS           := $(shell find ./integration-test/ -maxdepth 1 -mindepth 1 -type d)
 
 ifneq (${IMPORT_MAP_FILE},)
 IMPORT_MAP_OPTIONS     := --importmap ${IMPORT_MAP_FILE}
@@ -56,10 +56,10 @@ endif
 
 all: clean install lint build test-all
 
-$(BUILD_TARGETS):
+$(PLATFORMS):
 	$(MAKE) -C $@ $(TARGET)
 
-$(INTEGRATION_TESTS):
+$(INTEGRATIONS):
 	$(MAKE) -C $@ $(TARGET)
 
 ${LOCK_FILE}:
@@ -80,8 +80,8 @@ ${DENO_BUNDLE_FILE}: $(LINT_FILES)
 
 
 build: header-build ${DENO_BUNDLE_FILE} transform
-	${MAKE} TARGET=$@ do-build-targets
-	${MAKE} TARGET=$@ do-integration-tests
+	${MAKE} TARGET=$@ do-platform-action
+	${MAKE} TARGET=$@ do-integration-action
 
 cache:
 	deno cache \
@@ -98,17 +98,17 @@ cache:
 		${DENO_DEPENDENCIES_FILE})
 
 clean: header-clean
-	${MAKE} TARGET=$@ do-build-targets
-	${MAKE} TARGET=$@ do-integration-tests
+	${MAKE} TARGET=$@ do-platform-action
+	${MAKE} TARGET=$@ do-integration-action
 
 configure:
 	./configure
 
 deno: test build
 
-do-build-targets: $(BUILD_TARGETS)
+do-platform-action: $(PLATFORMS)
 
-do-integration-tests: $(INTEGRATION_TESTS)
+do-integration-action: $(INTEGRATIONS)
 
 fmt: format
 
@@ -134,8 +134,8 @@ install: ${LOCK_FILE}
 	@echo 
 	@echo Installing...
 	@echo
-	${MAKE} TARGET=$@ do-build-targets
-	${MAKE} TARGET=$@ do-integration-tests
+	${MAKE} TARGET=$@ do-platform-action
+	${MAKE} TARGET=$@ do-integration-action
 
 lint:
 	deno fmt --check ${RUN_PERMISSIONS} ${DENO_SOURCE_DIR}
@@ -163,8 +163,8 @@ test: header-test
 		${DENO_SOURCE_DIR}
 
 test-all: header-test test
-	${MAKE} TARGET=test do-build-targets
-	${MAKE} TARGET=test do-integration-tests
+	${MAKE} TARGET=test do-platform-action
+	${MAKE} TARGET=test do-integration-action
 
 test-quiet: header-test
 	deno test --unstable --failfast --quiet \
@@ -191,7 +191,7 @@ endif
 	build \
 	cache clean configure \
 	deno \
-	do-build-targets do-integration-tests \
+	do-platform-action do-integration-action \
 	fmt format \
 	header-build header-clean header-test \
 	install \
@@ -199,4 +199,4 @@ endif
 	run \
 	test test-all test-quiet test-watch transform \
 	upgrade \
-	$(BUILD_TARGETS) $(INTEGRATION_TESTS)
+	$(PLATFORMS) $(INTEGRATIONS)
