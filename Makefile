@@ -38,6 +38,7 @@ NPM_RUN                ?= ${NPM} run
 NPM_LINK               ?= ${NPM} link
 NPM_UNLINK             ?= ${NPM} unlink
 
+SOURCE_FILES           := ${shell find "${DENO_SOURCE_DIR}" -type f -name "*.ts"}
 LINT_FILES             := ${shell find "${DENO_SOURCE_DIR}" -type f -name "*.ts" -not -name "*.test.ts"}
 
 ifneq (${IMPORT_MAP_FILE},)
@@ -50,7 +51,7 @@ LOCK_OPTIONS           := --lock ${LOCK_FILE}
 LOCK_OPTIONS_WRITE     := --lock ${LOCK_FILE} --lock-write
 endif
 
-all: install lint test build node-build node-test $(INTEGRATION_TESTS)
+all: install lint test build node-build node-test
 
 ${LOCK_FILE}:
 	@echo "File ${LOCK_FILE} does not exist."
@@ -62,15 +63,13 @@ ${LOCK_FILE}:
 		${USE_UNSTABLE} \
 		${DENO_DEPENDENCIES_FILE}
 
-build: header(build)
-	@echo "// deno-fmt-ignore-file"            >  ${DENO_BUNDLE_FILE}
-	@echo "// deno-lint-ignore-file"           >> ${DENO_BUNDLE_FILE}
-	@echo "// @ts-nocheck"                     >> ${DENO_BUNDLE_FILE}
+${DENO_BUNDLE_FILE}: $(LINT_FILES)
+	@echo "// deno-fmt-ignore-file"   > ${DENO_BUNDLE_FILE}
+	@echo "// deno-lint-ignore-file" >> ${DENO_BUNDLE_FILE}
+	@echo "// @ts-nocheck"           >> ${DENO_BUNDLE_FILE}
 	deno bundle ${IMPORT_MAP_OPTIONS} ${DENO_MAIN} >> ${DENO_BUNDLE_FILE}
 
-	@echo 
-	@echo Transforming TypeScript...
-	@echo
+${NODE_GEN_DIR}: ${SOURCE_FILES}
 	mkdir -p ${NODE_GEN_DIR}
 	rsync -am --include="*.ts" --delete-during \
 		${DENO_APP_DIR}/ \
@@ -78,7 +77,7 @@ build: header(build)
 	find ${NODE_GEN_DIR} -type f -name "*.ts" -exec \
 		sed -i -E "s/(from \"\..+)\.ts(\";?)/\1\2/g" {} +
 
-	${MAKE} TARGET=$@ do-build-targets
+build: header(build) ${DENO_BUNDLE_FILE} ${NODE_GEN_DIR} node-build
 
 cache:
 	deno cache \
