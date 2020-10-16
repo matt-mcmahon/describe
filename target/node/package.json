@@ -10,12 +10,11 @@
   "types": "./dist/index.d.ts",
   "private": false,
   "scripts": {
-    "build": "run-s build:development",
-    "build:development": "tsc",
-    "build:production": "rm -rf ./dist && tsc -p tsconfig.production.json",
-    "clean": "rm -rf ./build ./dist ./.nyc_output",
-    "test": "run-s build:development test:build",
-    "test:build": "tap ./build/**/*.test.js"
+    "build": "run-s build-development",
+    "build-development": "tsc",
+    "build-production": "tsc -p tsconfig.production.json",
+    "prepack": "cat .gitignore .npmignore-additions > .npmignore",
+    "test": "tap ./build/**/*.test.js"
   },
   "dependencies": {
     "tap": "^14.10.8"
