@@ -37,8 +37,11 @@ NPM_INSTALL            ?= ${NPM} install --silent --prefer-offline
 NPM_RUN                ?= ${NPM} run
 NPM_LINK               ?= ${NPM} link
 NPM_UNLINK             ?= ${NPM} unlink
+NPM_PACKAGE_LOCK       ?= package-lock.json
 
 LINT_FILES             := ${shell find "${DENO_SOURCE_DIR}" -type f -name "*.ts" -not -name "*.test.ts"}
+
+BUILD_TARGETS          := $(shell find ./target/ -maxdepth 1 -mindepth 1 -type d)
 
 ifneq (${IMPORT_MAP_FILE},)
 IMPORT_MAP_OPTIONS     := --importmap ${IMPORT_MAP_FILE}
@@ -50,7 +53,10 @@ LOCK_OPTIONS           := --lock ${LOCK_FILE}
 LOCK_OPTIONS_WRITE     := --lock ${LOCK_FILE} --lock-write
 endif
 
-all: clean install lint test build node-build node-test $(INTEGRATION_TESTS)
+all: clean install lint build test
+
+$(BUILD_TARGETS):
+	$(MAKE) -C $@ $(TARGET)
 
 ${LOCK_FILE}:
 	@echo "File ${LOCK_FILE} does not exist."
@@ -101,15 +107,14 @@ clean:
 	@echo 
 	@echo Cleaning...
 	@echo
-	rm -rf                 \
-		${DENO_BUNDLE_FILE}  \
-		${NODE_GEN_DIR}
-	cd ${NODE_DIR} && ${NPM_RUN} clean
+	${MAKE} TARGET=$@ do-build-targets
 
 configure:
 	./configure
 
 deno: test build
+
+do-build-targets: $(BUILD_TARGETS)
 
 fmt: format
 
@@ -130,31 +135,6 @@ lint-quiet:
 	deno fmt --quiet --check ${RUN_PERMISSIONS} ${DENO_SOURCE_DIR}
 	-deno lint --quiet --unstable ${RUN_PERMISSIONS} ${DENO_SOURCE_DIR}
 
-node: node-build node-test
-
-node-build: test-quiet
-	@echo
-	@echo Building for NodeJS/NPM, etc. ...
-	@echo ↪ This code is a proof-of-concept and is not intended for production!
-	@echo
-	mkdir -p ${NODE_GEN_DIR}
-	rsync -am --include="*.ts" --delete-during \
-		${DENO_APP_DIR}/ \
-		${NODE_GEN_DIR}/
-	find ${NODE_GEN_DIR} -type f -name "*.ts" -exec \
-		sed -i -E "s/(from \"\..+)\.ts(\";?)/\1\2/g" {} +
-	cd ${NODE_DIR} \
-		&& ${NPM_INSTALL} \
-		&& ${NPM_RUN} clean \
-		&& ${NPM_RUN} build:production \
-		&& ${NPM_RUN} test
-
-node-link:
-	cd ${NODE_DIR} && ${NPM_LINK}
-
-node-test:
-	cd target/node && ${NPM_RUN} test
-
 run:
 	deno run ${RUN_PERMISSIONS} ${DENO_MAIN}
 
@@ -166,6 +146,7 @@ test:
 		${TEST_PERMISSIONS} ${LOCK_OPTIONS} ${CACHE_OPTIONS} \
 		${IMPORT_MAP_OPTIONS} \
 		${DENO_SOURCE_DIR}
+	${MAKE} TARGET=$@ do-build-targets
 
 test-quiet:
 	deno test --unstable --failfast --quiet \
@@ -192,10 +173,11 @@ endif
 	build \
 	cache clean configure \
 	deno \
+	do-build-targets \
 	fmt format \
 	install \
 	lint lint-quiet \
-	node node-build node-link node-test \
 	run \
 	test test-quiet test-watch \
-	upgrade
+	upgrade \
+	$(BUILD_TARGETS)
