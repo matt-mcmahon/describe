@@ -72,10 +72,7 @@ ${LOCK_FILE}:
 		${USE_UNSTABLE} \
 		${DENO_DEPENDENCIES_FILE}
 
-build:
-	@echo 
-	@echo Building...
-	@echo
+build: header-build
 	@echo "// deno-fmt-ignore-file"            >  ${DENO_BUNDLE_FILE}
 	@echo "// deno-lint-ignore-file"           >> ${DENO_BUNDLE_FILE}
 	@echo "// @ts-nocheck"                     >> ${DENO_BUNDLE_FILE}
@@ -108,10 +105,7 @@ cache:
 		${USE_UNSTABLE} \
 		${DENO_DEPENDENCIES_FILE})
 
-clean:
-	@echo 
-	@echo Cleaning...
-	@echo
+clean: header-clean
 	${MAKE} TARGET=$@ do-build-targets
 	${MAKE} TARGET=$@ do-integration-tests
 
@@ -128,6 +122,21 @@ fmt: format
 
 format:
 	deno fmt ${DENO_SOURCE_DIR} ${DENO_LIB_DIR}
+
+header-build:
+	@echo 
+	@echo Building...
+	@echo
+
+header-clean:
+	@echo 
+	@echo Cleaning...
+	@echo
+
+header-test:
+	@echo 
+	@echo Running Tests...
+	@echo
 
 install: ${LOCK_FILE}
 	@echo 
@@ -147,10 +156,7 @@ lint-quiet:
 run:
 	deno run ${RUN_PERMISSIONS} ${DENO_MAIN}
 
-test:
-	@echo 
-	@echo Running Tests...
-	@echo
+test: header-test
 	deno test --unstable --coverage  \
 		${TEST_PERMISSIONS} ${LOCK_OPTIONS} ${CACHE_OPTIONS} \
 		${IMPORT_MAP_OPTIONS} \
@@ -158,13 +164,13 @@ test:
 	${MAKE} TARGET=$@ do-build-targets
 	${MAKE} TARGET=$@ do-integration-tests
 
-test-quiet:
+test-quiet: header-test
 	deno test --unstable --failfast --quiet \
 		${TEST_PERMISSIONS} ${LOCK_OPTIONS} ${CACHE_OPTIONS} \
 		${IMPORT_MAP_OPTIONS} \
 		${DENO_SOURCE_DIR}
 
-test-watch:
+test-watch: header-test
 	while inotifywait -e close_write ${DENO_APP_DIR} ; do make test;	done
 
 upgrade:
@@ -185,6 +191,7 @@ endif
 	deno \
 	do-build-targets do-integration-tests \
 	fmt format \
+	header-build header-clean header-test \
 	install \
 	lint lint-quiet \
 	run \
