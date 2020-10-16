@@ -72,22 +72,14 @@ ${LOCK_FILE}:
 		${USE_UNSTABLE} \
 		${DENO_DEPENDENCIES_FILE}
 
-build: header-build
+${DENO_BUNDLE_FILE}: $(LINT_FILES)
 	@echo "// deno-fmt-ignore-file"            >  ${DENO_BUNDLE_FILE}
 	@echo "// deno-lint-ignore-file"           >> ${DENO_BUNDLE_FILE}
 	@echo "// @ts-nocheck"                     >> ${DENO_BUNDLE_FILE}
 	deno bundle ${IMPORT_MAP_OPTIONS} ${DENO_MAIN} >> ${DENO_BUNDLE_FILE}
 
-	@echo 
-	@echo Transforming TypeScript...
-	@echo
-	mkdir -p ${NODE_GEN_DIR}
-	rsync -am --include="*.ts" --delete-during \
-		${DENO_APP_DIR}/ \
-		${NODE_GEN_DIR}/
-	find ${NODE_GEN_DIR} -type f -name "*.ts" -exec \
-		sed -i -E "s/(from \"\..+)\.ts(\";?)/\1\2/g" {} +
 
+build: header-build ${DENO_BUNDLE_FILE} transform
 	${MAKE} TARGET=$@ do-build-targets
 	${MAKE} TARGET=$@ do-integration-tests
 
@@ -156,6 +148,14 @@ lint-quiet:
 run:
 	deno run ${RUN_PERMISSIONS} ${DENO_MAIN}
 
+transform:
+	mkdir -p ${NODE_GEN_DIR}
+	rsync -am --include="*.ts" --delete-during \
+		${DENO_APP_DIR}/ \
+		${NODE_GEN_DIR}/
+	find ${NODE_GEN_DIR} -type f -name "*.ts" -exec \
+		sed -i -E "s/(from \"\..+)\.ts(\";?)/\1\2/g" {} +
+
 test: header-test
 	deno test --unstable --coverage  \
 		${TEST_PERMISSIONS} ${LOCK_OPTIONS} ${CACHE_OPTIONS} \
@@ -195,6 +195,6 @@ endif
 	install \
 	lint lint-quiet \
 	run \
-	test test-quiet test-watch \
+	test test-quiet test-watch transform \
 	upgrade \
 	$(BUILD_TARGETS) $(INTEGRATION_TESTS)
