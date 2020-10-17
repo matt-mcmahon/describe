@@ -95,7 +95,6 @@ cache:
 		${DENO_DEPENDENCIES_FILE})
 
 clean: header(clean)
-	rm -rf ${NODE_GEN_DIR}
 	cd ${NODE_DIR} && ${NPM_RUN} clean
 
 configure:
