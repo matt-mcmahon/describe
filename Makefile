@@ -29,8 +29,7 @@ DENO_SOURCE_DIR        ?= ./source
 DENO_APP_DIR           ?= ${DENO_SOURCE_DIR}/app
 DENO_LIB_DIR           ?= ${DENO_SOURCE_DIR}/lib
 
-NODE_DIR               ?= ./platform/node
-NODE_GEN_DIR           ?= ${NODE_DIR}/source/gen
+GEN_DIR                ?= /dev/null
 
 NPM                    ?= npm
 NPM_INSTALL            ?= ${NPM} install
@@ -74,15 +73,15 @@ ${DENO_BUNDLE_FILE}: $(LINT_FILES)
 	@echo "// @ts-nocheck"           >> ${DENO_BUNDLE_FILE}
 	deno bundle ${IMPORT_MAP_OPTIONS} ${DENO_MAIN} >> ${DENO_BUNDLE_FILE}
 
-${NODE_GEN_DIR}: ${SOURCE_FILES}
-	mkdir -p ${NODE_GEN_DIR}
+${GEN_DIR}: ${SOURCE_FILES}
+	mkdir -p $@
 	rsync -am --include="*.ts" --delete-during \
 		${DENO_APP_DIR}/ \
-		${NODE_GEN_DIR}/
-	find ${NODE_GEN_DIR} -type f -name "*.ts" -exec \
+		$@/
+	find $@ -type f -name "*.ts" -exec \
 		sed -i -E "s/(from \"\..+)\.ts(\";?)/\1\2/g" {} +
 
-build: header(build) ${DENO_BUNDLE_FILE} ${NODE_GEN_DIR}
+build: header(build) ${DENO_BUNDLE_FILE}
 	${MAKE} TARGET=$@ do-platform-action
 
 cache:
