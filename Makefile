@@ -157,7 +157,7 @@ run:
 	deno run $(RUN_PERMISSIONS) $(DENO_MAIN)
 
 test: header(test)
-	deno test --unstable --coverage  \
+	deno test --unstable --coverage \
 		$(TEST_PERMISSIONS) $(LOCK_OPTIONS) $(CACHE_OPTIONS) \
 		$(IMPORT_MAP_OPTIONS) \
 		$(DENO_SOURCE_DIR)
