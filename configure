@@ -1,38 +1,9 @@
-#!/bin/bash
+#!/bin/sh
 
-printf "
-Create a minimal .env file for the project. See \`./example/.env\` or \`./README.md\` for more information.
-"
-
-if [ -f ".env" ]; then
-     read -p "A .env file exists; overwrite? [y/N] " INPUT
-     case $INPUT in
-     y | Y | yes | YES) truncate -s 0 .env ;;
-     esac
-else
-     touch .env
-fi
-
-read -e                                                 \
-     -i "$IMPORT_MAP_FILE"                              \
-     -p "Import map filename, or nothing to disable: "  \
-     IMPORT_MAP_FILE
-if [ "$IMPORT_MAP_FILE" != "" ] && ! [ -e "$IMPORT_MAP_FILE" ]; then
-     printf "Import Map file ${IMPORT_MAP_FILE} was not found, creating..."
-     printf "{}" > $IMPORT_MAP_FILE
-fi
-echo "IMPORT_MAP_FILE=$IMPORT_MAP_FILE" >> .env
-
-read -e                    \
-     -i "npm"              \
-     -p "NPM executable: " \
-     NPM
-NPM=${NPM:-npm}
-echo "NPM=${NPM}" >> .env
-
-DENO_DIR=${DENO_DIR:-.deno}
-read -e                                            \
-     -i "$DENO_DIR"                                \
-     -p "Local DENO_DIR, or nothing to disable: "  \
-     DENO_DIR
-echo "DENO_DIR=$DENO_DIR" >> .env
+deno "run" \
+	"--allow-run" \
+	"--allow-read=$PWD" \
+	"--allow-write=$PWD" \
+	"--unstable" \
+	"file:///$PWD/scripts/configure.ts" \
+	"$@"
