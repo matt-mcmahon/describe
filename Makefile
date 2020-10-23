@@ -151,7 +151,7 @@ lint:
 
 lint-quiet:
 	deno fmt --quiet --check $(RUN_PERMISSIONS) $(DENO_SOURCE_DIR)
-	-deno lint --quiet --unstable $(RUN_PERMISSIONS) $(DENO_SOURCE_DIR)
+	-deno lint --quiet --unstable $(RUN_PERMISSIONS) $(LINT_FILES)
 
 run:
 	deno run $(RUN_PERMISSIONS) $(DENO_MAIN)
