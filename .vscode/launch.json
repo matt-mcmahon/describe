@@ -12,7 +12,7 @@
       "runtimeExecutable": "deno",
       "runtimeArgs": [
         "test",
-        "--lock=${workspaceFolder}/lock-file.json",
+        "--lock=${workspaceFolder}/lock_file.json",
         "--cached-only",
         "--inspect-brk",
         "--unstable",
