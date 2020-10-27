@@ -1,10 +1,12 @@
-import { describe, makeAssert } from "./describe";
-import type { Assert, Plan, TestImplementation } from "./describe";
-
-import { inspect as _inspect } from "../lib/inspect";
-import type { Inspect } from "../lib/inspect";
-
-import type { Identical } from "./identical.d";
+import { Inspect, inspect as _inspect } from "../lib/inspect";
+import {
+  Assert,
+  describe,
+  makeAssert,
+  Plan,
+  TestImplementation,
+} from "./describe";
+import { Identical } from "./identical";
 
 describe("describe, self-test", ({ assert, inspect }) => {
   {
@@ -73,9 +75,7 @@ describe("makeAssert: { actual, expected }", async ({ assert, inspect }) => {
   makeAssert(fakeAssert(assert, result))(plan);
 });
 
-describe("async makeAssert", async (
-  { assert, inspect },
-) => {
+describe("async makeAssert", async ({ assert, inspect }) => {
   const plan: Plan = {
     actual: "foo",
     expected: "bar",

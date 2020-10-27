@@ -102,7 +102,7 @@ let System, __instantiate;
   };
 })();
 
-System.register("https://deno.land/std@0.73.0/fmt/colors", [], function (exports_1, context_1) {
+System.register("https://deno.land/std@0.74.0/fmt/colors", [], function (exports_1, context_1) {
     "use strict";
     var noColor, enabled, ANSI_PATTERN;
     var __moduleName = context_1 && context_1.id;
@@ -346,7 +346,7 @@ System.register("https://deno.land/std@0.73.0/fmt/colors", [], function (exports
         }
     };
 });
-System.register("https://deno.land/std@0.73.0/testing/_diff", [], function (exports_2, context_2) {
+System.register("https://deno.land/std@0.74.0/testing/_diff", [], function (exports_2, context_2) {
     "use strict";
     var DiffType, REMOVED, COMMON, ADDED;
     var __moduleName = context_2 && context_2.id;
@@ -502,7 +502,7 @@ System.register("https://deno.land/std@0.73.0/testing/_diff", [], function (expo
         }
     };
 });
-System.register("https://deno.land/std@0.73.0/testing/asserts", ["https://deno.land/std@0.73.0/fmt/colors", "https://deno.land/std@0.73.0/testing/_diff"], function (exports_3, context_3) {
+System.register("https://deno.land/std@0.74.0/testing/asserts", ["https://deno.land/std@0.74.0/fmt/colors", "https://deno.land/std@0.74.0/testing/_diff"], function (exports_3, context_3) {
     "use strict";
     var colors_ts_1, _diff_ts_1, CAN_NOT_DISPLAY, AssertionError;
     var __moduleName = context_3 && context_3.id;
@@ -846,7 +846,7 @@ System.register("https://deno.land/std@0.73.0/testing/asserts", ["https://deno.l
         }
     };
 });
-System.register("file:///home/matt/@mwm/describe/source/lib/remote/asserts", ["https://deno.land/std@0.73.0/testing/asserts"], function (exports_4, context_4) {
+System.register("file:///home/matt/@mwm/describe/source/lib/remote/asserts", ["https://deno.land/std@0.74.0/testing/asserts"], function (exports_4, context_4) {
     "use strict";
     var __moduleName = context_4 && context_4.id;
     function exportStar_1(m) {

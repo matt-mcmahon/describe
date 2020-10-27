@@ -1,9 +1,9 @@
 // deno-lint-ignore-file
 
-import type { Identical } from "./identical.d";
+import type { Identical } from "./identical";
 import { describe } from "./describe";
 
-describe("source/app/identical.d.ts", ({ assert }) => {
+describe("source/app/identical.d", ({ assert }) => {
   const any1: Identical<any, any> = true;
   const any2: Identical<any, never> = false;
   const any3: Identical<any, unknown> = false;
