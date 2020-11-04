@@ -1,4 +1,4 @@
-import { assertEquals } from "./remote/asserts.ts";
+import { assertEquals } from "../../remote/asserts.ts";
 
 import { inspect } from "./inspect.ts";
 

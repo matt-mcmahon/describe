@@ -1,5 +1,5 @@
 import { columns, rows } from "./terminal.ts";
-import { assertEquals } from "./remote/asserts.ts";
+import { assertEquals } from "../../remote/asserts.ts";
 
 Deno.test("terminal.ts :: should export { rows: number, columns: number } ", () => {
   assertEquals(typeof rows, "number");
