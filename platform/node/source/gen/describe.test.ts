@@ -1,11 +1,6 @@
 import { Inspect, inspect as _inspect } from "../lib/inspect";
-import {
-  Assert,
-  describe,
-  makeAssert,
-  Plan,
-  TestImplementation,
-} from "./describe";
+import type { Assert, Plan, TestImplementation } from "./describe";
+import { describe, makeAssert } from "./describe";
 import { Identical } from "./identical";
 
 describe("describe, self-test", ({ assert, inspect }) => {
