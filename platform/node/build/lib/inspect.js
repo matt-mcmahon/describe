@@ -14,7 +14,7 @@ const util_1 = require("util");
  * inspect`foo: ${foo}`; //=>
  * ```
  */
-exports.inspect = (literals, ...values) => {
+const inspect = (literals, ...values) => {
     const inspectedValues = values.map((o) => util_1.inspect(o, { colors: true }));
     const full = [];
     for (let i = 0; i < literals.length; i++) {
@@ -27,3 +27,4 @@ exports.inspect = (literals, ...values) => {
     }
     return full.join("");
 };
+exports.inspect = inspect;
