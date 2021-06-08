@@ -28,6 +28,7 @@ DENO_DEPENDENCIES_FILE ?= dependencies.ts
 DENO_SOURCE_DIR        ?= source
 DENO_APP_DIR           ?= $(DENO_SOURCE_DIR)/app
 DENO_LIB_DIR           ?= $(DENO_SOURCE_DIR)/lib
+DENO_TEST_COVERAGE_DIR ?= cov_profile
 
 DENO_ABS               := $(PWD)/$(DENO_DIR)
 
@@ -169,12 +170,13 @@ run:
 	deno run $(RUN_PERMISSIONS) $(DENO_MAIN)
 
 test: .header(test) $(LOCK_FILE)
-	deno test --unstable --coverage \
+	deno test --unstable --coverage=$(DENO_TEST_COVERAGE_DIR) \
 		$(TEST_PERMISSIONS) \
 		$(LOCK_OPTIONS) \
 		$(USE_CACHE) \
 		$(IMPORT_MAP_OPTIONS) \
 		$(DENO_SOURCE_DIR)
+	deno coverage $(DENO_TEST_COVERAGE_DIR)
 
 test-all: .header(test) test
 	$(MAKE) TARGET=test do-platform-action
