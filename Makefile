@@ -160,11 +160,13 @@ install: .header(install) $(LOCK_FILE)
 
 lint:
 	deno fmt --check $(RUN_PERMISSIONS) $(DENO_SOURCE_DIR)
-	-deno lint --unstable $(RUN_PERMISSIONS) $(LINT_FILES)
+	-deno lint --unstable --no-require-await $(RUN_PERMISSIONS) $(LINT_FILES)
 
 lint-quiet:
 	deno fmt --quiet --check $(RUN_PERMISSIONS) $(DENO_SOURCE_DIR)
-	-deno lint --quiet --unstable $(RUN_PERMISSIONS) $(LINT_FILES)
+	-deno lint --quiet --unstable  --no-require-await \
+		$(RUN_PERMISSIONS) \
+		$(LINT_FILES)
 
 run:
 	deno run $(RUN_PERMISSIONS) $(DENO_MAIN)
