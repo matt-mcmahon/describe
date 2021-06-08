@@ -11,7 +11,7 @@ export type Inspect = {
  * Deno.inspect that works as a tagged template function.
  * ```js
  * const foo = { msg: "Foo!" };
- * inspect`foo: ${foo}`; //=> 
+ * inspect`foo: ${foo}`; //=>
  * ```
  */
 export const inspect = (
